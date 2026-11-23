@@ -61,11 +61,28 @@ behörigheter inom `databas_labb2`, men inga globala databasbehörigheter.
 
 [Beskriv vilka attribut varje entitet behöver och varför. Lägg till eller ta bort rader.]
 
-| Entitet     | Attribut                                                                                                     | Vad lagras?                                                                                                                                                      | Obligatoriskt?                        | Unikt?                                    |
-|-------------|--------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------|-------------------------------------------|
-| employee    | employee_id<br/>first_name<br/>last_name<br/>email<br/>employment_date<br/>department_id<br/>department_name | ett unikt nummer för den anställde<br/>förnamn<br/>efternamn<br/>e-postadress<br/>anställningsdatum<br/>avdelnings-id                                            | ja<br/>ja<br/>ja<br/>ja<br/>ja<br/>ja | ja<br/>nej<br/>nej<br/>ja<br/>nej<br/>nej |
-| department  | department_id<br/>office_location                                                                            | ett unikt nummer för avdelningen<br/>kontorsort                                                                                                                  | ja<br/>ja                             | ja<br/>nej                                |
-| access_card | access_card_id<br/>access_card_number<br/>issuance_date<br/>expiry_date<br/>employee_id                      | ett unikt nummer för passerkortet<br/>ett unikt nummer för just en specifik passerkort<br/>utfärdandedatum<br/>sista giltighetsdatum<br/>registrerat på anställd | ja<br/>ja<br/>ja<br/>ja<br/>ja        | ja<br/>ja<br/>nej<br/>nej<br/>ja          |
+## 2.2 Attribut
+
+| Entitet     | Attribut           | Vad lagras?                       | Obligatoriskt? | Unikt? |
+|-------------|--------------------|-----------------------------------|----------------|--------|
+| employee    | employee_id        | Unikt ID för den anställde        | Ja             | Ja     |
+|             | first_name         | Förnamn                           | Ja             | Nej    |
+|             | last_name          | Efternamn                         | Ja             | Nej    |
+|             | email              | E-postadress                      | Ja             | Ja     |
+|             | employment_date    | Anställningsdatum                 | Ja             | Nej    |
+|             | department_id      | ID för den anställdes avdelning   | Ja             | Nej    |
+| department  | department_id      | Unikt ID för avdelningen          | Ja             | Ja     |
+|             | department_name    | Avdelningens namn                 | Ja             | Nej    |
+|             | office_location    | Kontorsort                        | Ja             | Nej    |
+| access_card | access_card_id     | Unikt internt ID för passerkortet | Ja             | Ja     |
+|             | access_card_number | Unikt kortnummer                  | Ja             | Ja     |
+|             | issuance_date      | Utfärdandedatum                   | Ja             | Nej    |
+|             | expiry_date        | Sista giltighetsdatum             | Ja             | Nej    |
+|             | employee_id        | ID för kortets innehavare         | Ja             | Ja     |
+
+**Samtliga attribut har valts som obligatoriska för respektive registrerad post. Det innebär däremot inte att alla
+relationer är obligatoriska. En anställd behöver exempelvis inte ha något passerkort, men varje registrerat passerkort
+måste tillhöra exakt en anställd. En avdelning kan också existera utan anställda.**
 
 ### 2.3 Relationer och kardinalitet
 
