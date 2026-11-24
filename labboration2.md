@@ -33,10 +33,27 @@ Därefter använde jag `SELECT DATABASE();` för att kontrollera att den aktiva 
 Slutligen körde jag `SHOW GRANTS;` för att kontrollera användarens behörigheter. Resultatet visade att `labb2_user` har
 behörigheter inom `databas_labb2`, men inga globala databasbehörigheter.*
 
-![picture1.png](pictures/picture1.png)
 
-*Figur 1. Kontroll av användarbehörigheter i MySQL. Resultatet visar att labb2_user har fullständiga behörigheter till
-databasen databas_labb2, men inga motsvarande globala behörigheter till övriga databaser.*
+<table>
+  <tr>
+    <td width="320" valign="top">
+      <a href="pictures/picture1.png">
+        <img src="pictures/picture1.png"
+             alt="Kontroll av MySQL-användarens behörigheter"
+             width="300">
+      </a>
+    </td>
+    <td valign="top">
+      <strong>Figur 1.</strong> Kontroll av användarbehörigheter
+      i MySQL. Resultatet visar att <code>labb2_user</code>
+      har fullständiga behörigheter till databasen
+      <code>databas_labb2</code>, men inga motsvarande
+      globala behörigheter till övriga databaser.
+      <p><em>Klicka på bilden för att visa den i full storlek.</em></p>
+    </td>
+  </tr>
+</table>
+
 
 ---
 
@@ -247,10 +264,21 @@ tillsammans med personens namn.
 Eftersom `INNER JOIN` bara tar med rader där det finns en matchning visas inte avdelningar som saknar anställda. Alla 50
 anställda kommer däremot med eftersom varje anställd har ett `department_id` som motsvarar en befintlig avdelning.
 
-![G1.png](pictures/G1.png)
-
-*Figur 3. Resultat av G1 – INNER JOIN mellan employee och department. Frågan visar 50 anställda med förnamn, efternamn
-och tillhörande avdelning.*
+<table>
+  <tr>
+    <td width="320" valign="top">
+      <a href="pictures/G1.png">
+        <img src="pictures/G1.png" alt="Resultat av G1 – INNER JOIN" width="300">
+      </a>
+    </td>
+    <td valign="top">
+      <strong>Figur 3.</strong> Resultat av G1 – INNER JOIN mellan
+      employee och department. Frågan visar 50 anställda med
+      förnamn, efternamn och tillhörande avdelning.
+      <p><em>Klicka på bilden för att visa den i full storlek.</em></p>
+    </td>
+  </tr>
+</table>
 
 ### 4.2 G2 – Alla avdelningar med anställda (LEFT JOIN)
 
@@ -266,8 +294,6 @@ FROM department d
                    ON e.department_id = d.department_id;
 ```
 
-**Förklaring av resultatet:**
-
 Frågan använder `LEFT JOIN` för att koppla samman `department` och `employee` genom deras gemensamma `department_id`.
 Eftersom `department` står till vänster i kopplingen visas samtliga avdelningar, oavsett om de har anställda eller inte.
 
@@ -276,16 +302,68 @@ Resultatet innehåller 52 rader: 50 anställda och två avdelningar utan persona
 
 Jag har använt `CONCAT()` för att visa för- och efternamn i samma kolumn.
 
-![G2.png](pictures/G2.png)
-*Figur 4. Resultat av G2 – LEFT JOIN, inklusive avdelningar utan anställda.*
+<table>
+  <tr>
+    <td width="320" valign="top">
+      <a href="pictures/G2.png">
+        <img src="pictures/G2.png"
+             alt="Resultat av G2 – LEFT JOIN"
+             width="300">
+      </a>
+    </td>
+    <td valign="top">
+      <strong>Figur 4.</strong> Resultat av G2 – LEFT JOIN,
+      inklusive avdelningarna Juridik och Kvalitetssäkring
+      som saknar anställda och därför visas med
+      <code>NULL</code> i namnkolumnen.
+      <p><em>Klicka på bilden för att visa den i full storlek.</em></p>
+    </td>
+  </tr>
+</table>
 
 ### 4.3 VG1 – Anställda med avdelning och eventuellt passerkort
 
-**SQL-fråga:** [Lägg till länk till VG1 i `personalregister.sql` när frågan är färdig.]
+**SQL-fråga:** [VG1 – Anställda med avdelning och passerkort](SQL-files/personalregister.sql#L456-L466)
 
-**Skärmbild:** [Lägg in `pictures/vg1.png` när resultatet är klart.]
+```sql
+SELECT d.department_name,
+       a.access_card_number,
+       CONCAT(e.first_name, ' ', e.last_name) AS full_name
+FROM employee e
+         INNER JOIN department d
+                    ON e.department_id = d.department_id
+         LEFT JOIN access_card a
+                   ON e.employee_id = a.employee_id;
+```
 
-**Förklaring:** [Hur ser du till att även anställda utan passerkort visas?]
+Frågan använder INNER JOIN för att koppla varje anställd till rätt avdelning genom department_id.
+Eftersom alla anställda måste tillhöra en befintlig avdelning kommer samtliga 50 anställda med i resultatet.
+
+Därefter används LEFT JOIN för att koppla de anställda till tabellen access_card genom employee_id. Eftersom employee
+står till vänster behålls alla anställda, även om de inte har något passerkort.
+
+Resultatet innehåller därför 50 rader. De 25 anställda som har passerkort får sitt kortnummer visat, medan de övriga 25
+visas med NULL i kolumnen access_card_number.
+
+<table>
+  <tr>
+    <td width="320" valign="top">
+      <a href="pictures/VG1.png.png">
+        <img src="pictures/VG1.png"
+             alt="Resultat av VG1 – anställda med avdelning och eventuellt passerkort"
+             width="300">
+      </a>
+    </td>
+    <td valign="top">
+      <strong>Figur 5.</strong> Resultat av VG1 – JOIN mellan
+      employee, department och access_card.
+      Frågan visar alla 50 anställda med deras avdelningar
+      och eventuella passerkort. De 25 anställda som saknar
+      passerkort visas med <code>NULL</code> som kortnummer.
+      <p><em>Klicka på bilden för att visa den i full storlek.</em></p>
+    </td>
+  </tr>
+</table>
 
 ### 4.4 VG2 – Avdelningar, anställda och eventuella passerkort
 

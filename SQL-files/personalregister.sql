@@ -453,4 +453,17 @@ FROM department d
                    ON e.department_id = d.department_id;
 
 
+-- VG1. Anställda med avdelning och passerkort
+-- Visa alla anställdas namn, avdelning och eventuella kortnummer.
+-- Anställda utan passerkort ska också finnas med.
+SELECT d.department_name,
+       a.access_card_number,
+       CONCAT(e.first_name, ' ', e.last_name) AS full_name
+FROM employee e
+         INNER JOIN department d
+                    ON e.department_id = d.department_id
+         LEFT JOIN access_card a
+                   ON e.employee_id = a.employee_id;
+
+
 -- endregion
