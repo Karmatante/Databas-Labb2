@@ -37,6 +37,7 @@ behörigheter inom `databas_labb2`, men inga globala databasbehörigheter.*
 
 *Figur 1. Kontroll av användarbehörigheter i MySQL. Resultatet visar att labb2_user har fullständiga behörigheter till
 databasen databas_labb2, men inga motsvarande globala behörigheter till övriga databaser.*
+
 ---
 
 ## 2. Datamodellering – G
@@ -75,19 +76,19 @@ databasen databas_labb2, men inga motsvarande globala behörigheter till övriga
 | **employee_competence** | *employee_id*        | ID för den anställde              | Ja             | Nej, inte enskilt |
 |                         | *competence_id*      | ID för kompetensen                | Ja             | Nej, inte enskilt |
 
-*Samtliga attribut har valts som obligatoriska för respektive registrerad post. Det innebär däremot inte att alla
+**Samtliga attribut har valts som obligatoriska för respektive registrerad post. Det innebär däremot inte att alla
 relationer är obligatoriska. En anställd behöver exempelvis inte ha något passerkort, men varje registrerat passerkort
-måste tillhöra exakt en anställd. En avdelning kan också existera utan anställda.*
+måste tillhöra exakt en anställd. En avdelning kan också existera utan anställda.**
 
 ### 2.2.1 Tillvägagångssätt och reflektion kring attributval
 
-*Jag utgick från verksamhetsbeskrivningen för att identifiera vilka attribut som behövdes för respektive entitet. Under
+Jag utgick från verksamhetsbeskrivningen för att identifiera vilka attribut som behövdes för respektive entitet. Under
 arbetets gång justerade jag modellen för att undvika onödig eller upprepad information, exempelvis department_name i
-employee och employee_count i department.*
+employee och employee_count i department.
 
-*Jag valde datatyper och begränsningar utifrån verksamhetens krav och tog särskild hänsyn till vilka uppgifter som måste
+Jag valde datatyper och begränsningar utifrån verksamhetens krav och tog särskild hänsyn till vilka uppgifter som måste
 vara obligatoriska eller unika. För VG utökade jag modellen med kompetenser och en kopplingstabell för att hantera
-många-till-många-relationen.*
+många-till-många-relationen.
 
 ### 2.3 Relationer och kardinalitet
 
@@ -149,7 +150,7 @@ N-relationer
 
 ### 2.5 Datamodell – bild
 
-![ER-diagram över personalregistrets databasmodell med fem tabeller och deras relationer (G och VG).](pictures/ER-diagramLABB2.drawio.png "ER-diagram")
+![ER-diagramLABB2.png](pictures/ER-diagramLABB2.png)
 
 *Figur 2. ER-diagram över personalregistrets databasmodell, inklusive kompetenshantering för VG.*
 
