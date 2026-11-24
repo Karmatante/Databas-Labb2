@@ -34,36 +34,46 @@ Slutligen körde jag `SHOW GRANTS;` för att kontrollera användarens behörighe
 behörigheter inom `databas_labb2`, men inga globala databasbehörigheter.*
 
 ![picture1.png](pictures/picture1.png)
+
+*Figur 1. Kontroll av användarbehörigheter i MySQL. Resultatet visar att labb2_user har fullständiga behörigheter till
+databasen databas_labb2, men inga motsvarande globala behörigheter till övriga databaser.*
 ---
 
 ## 2. Datamodellering – G
 
 ### 2.1 Identifierade entiteter
 
-| Entitet         | Vad representerar den?               | Varför behövs den?                                                                        |
-|-----------------|--------------------------------------|-------------------------------------------------------------------------------------------|
-| **employee**    | *Företagets anställda*               | För att hålla reda på alla anstälda inom företaget.                                       |
-| **department**  | *Företagets olika avdelningar*       | För att registrera företagets avdelningar och kunna koppla anställda till rätt avdelning. |
-| **access_card** | *Passerkort som anställda kan få/ha* | För att hålla reda på de passerkort som har getts ut.                                     |
+| Entitet                 | Vad representerar den?                            | Varför behövs den?                                                                                                   |
+|-------------------------|---------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
+| **employee**            | *Företagets anställda*                            | För att hålla reda på alla anstälda inom företaget.                                                                  |
+| **department**          | *Företagets olika avdelningar*                    | För att registrera företagets avdelningar och kunna koppla anställda till rätt avdelning.                            |
+| **access_card**         | *Passerkort som anställda kan få/ha*              | För att hålla reda på de passerkort som har getts ut.                                                                |
+| **competence**          | *Kompetenser som Java, SQL och projektledning.*   | För att registrera vilka kompetenser som finns och deras beskrivningar, även om ingen anställd har kompetensen ännu. |
+| **employee_competence** | *Kopplingen mellan en anställd och en kompetens.* | För att en anställd ska kunna ha flera kompetenser och samma kompetens kunna tillhöra flera anställda.               |
 
 ### 2.2 Attribut
 
-| Entitet           | Attribut             | Vad lagras?                       | Obligatoriskt? | Unikt? |
-|-------------------|----------------------|-----------------------------------|----------------|--------|
-| **employee**      | *employee_id*        | Unikt ID för den anställde        | Ja             | Ja     |
-|                   | *first_name*         | Förnamn                           | Ja             | Nej    |
-|                   | *last_name*          | Efternamn                         | Ja             | Nej    |
-|                   | *email*              | E-postadress                      | Ja             | Ja     |
-|                   | *employment_date*    | Anställningsdatum                 | Ja             | Nej    |
-|                   | *department_id*      | ID för den anställdes avdelning   | Ja             | Nej    |
-| **department**    | *department_id*      | Unikt ID för avdelningen          | Ja             | Ja     |
-|                   | *department_name*    | Avdelningens namn                 | Ja             | Nej    |
-|                   | *office_location*    | Kontorsort                        | Ja             | Nej    |
-| access_card       | *access_card_id*     | Unikt internt ID för passerkortet | Ja             | Ja     |
-| **             ** | *access_card_number* | Unikt kortnummer                  | Ja             | Ja     |
-|                   | *issuance_date*      | Utfärdandedatum                   | Ja             | Nej    |
-|                   | *expiry_date*        | Sista giltighetsdatum             | Ja             | Nej    |
-|                   | *employee_id*        | ID för kortets innehavare         | Ja             | Ja     |
+| Entitet                 | Attribut             | Vad lagras?                       | Obligatoriskt? | Unikt?            |
+|-------------------------|----------------------|-----------------------------------|----------------|-------------------|
+| **employee**            | *employee_id*        | Unikt ID för den anställde        | Ja             | Ja                |
+|                         | *first_name*         | Förnamn                           | Ja             | Nej               |
+|                         | *last_name*          | Efternamn                         | Ja             | Nej               |
+|                         | *email*              | E-postadress                      | Ja             | Ja                |
+|                         | *employment_date*    | Anställningsdatum                 | Ja             | Nej               |
+|                         | *department_id*      | ID för den anställdes avdelning   | Ja             | Nej               |
+| **department**          | *department_id*      | Unikt ID för avdelningen          | Ja             | Ja                |
+|                         | *department_name*    | Avdelningens namn                 | Ja             | Nej               |
+|                         | *office_location*    | Kontorsort                        | Ja             | Nej               |
+| **access_card**         | *access_card_id*     | Unikt internt ID för passerkortet | Ja             | Ja                |
+|                         | *access_card_number* | Unikt kortnummer                  | Ja             | Ja                |
+|                         | *issuance_date*      | Utfärdandedatum                   | Ja             | Nej               |
+|                         | *expiry_date*        | Sista giltighetsdatum             | Ja             | Nej               |
+|                         | *employee_id*        | ID för kortets innehavare         | Ja             | Ja                |
+| **competence**          | *competence_id*      | Unikt ID för kompetensen          | Ja             | Ja                |
+|                         | *competence_name*    | Kompetensens namn                 | Ja             | Ja                |
+|                         | *description*        | Beskrivning av kompetensen        | Ja             | Nej               |
+| **employee_competence** | *employee_id*        | ID för den anställde              | Ja             | Nej, inte enskilt |
+|                         | *competence_id*      | ID för kompetensen                | Ja             | Nej, inte enskilt |
 
 *Samtliga attribut har valts som obligatoriska för respektive registrerad post. Det innebär däremot inte att alla
 relationer är obligatoriska. En anställd behöver exempelvis inte ha något passerkort, men varje registrerat passerkort
@@ -71,74 +81,88 @@ måste tillhöra exakt en anställd. En avdelning kan också existera utan anst�
 
 ### 2.2.1 Tillvägagångssätt och reflektion kring attributval
 
-*Jag började med att läsa verksamhetsbeskrivningen och identifiera vilka uppgifter som behövde lagras för varje entitet.
-Därefter lade jag till attribut som jag själv ansåg kunde vara användbara i ett personalregister. Jag försökte också
-avgöra vilka attribut som skulle vara obligatoriska respektive unika.*
+*Jag utgick från verksamhetsbeskrivningen för att identifiera vilka attribut som behövdes för respektive entitet. Under
+arbetets gång justerade jag modellen för att undvika onödig eller upprepad information, exempelvis department_name i
+employee och employee_count i department.*
 
-*I mitt första förslag gjorde jag några misstag. Bland annat placerade jag `department_name` i tabellen `employee`,
-trots
-att informationen redan skulle finnas i `department`. Jag hade också lagt till `department_manager` och
-`employee_count`, eftersom jag tänkte att dessa uppgifter kunde vara användbara för företaget.*
-
-*När jag gick igenom modellen igen insåg jag att alla tänkbara uppgifter inte behöver lagras. Vissa ingår inte i
-verksamhetsbeskrivningen, medan andra kan hämtas eller beräknas från befintlig data. Exempelvis kan antalet anställda på
-en avdelning beräknas i stället för att lagras separat.*
-
-*Jag behövde även tänka om kring vilka attribut som skulle vara unika. Till en början markerade jag
-`employee.department_id` som unikt, men det skulle innebära att endast en anställd kunde tillhöra varje avdelning.
-Eftersom flera anställda ska kunna arbeta på samma avdelning ändrade jag detta.*
-
-*För passerkorten behövde jag skilja mellan att en anställd **kan** ha ett passerkort och att varje registrerat
-passerkort **måste** tillhöra en anställd. Därför valde jag att använda `employee_id` i `access_card` som en
-obligatorisk och unik
-koppling till den anställde.*
-
-*Efter genomgången har jag en modell som bättre följer verksamhetsbeskrivningen och där samma information inte behöver
-lagras på flera ställen.*
+*Jag valde datatyper och begränsningar utifrån verksamhetens krav och tog särskild hänsyn till vilka uppgifter som måste
+vara obligatoriska eller unika. För VG utökade jag modellen med kompetenser och en kopplingstabell för att hantera
+många-till-många-relationen.*
 
 ### 2.3 Relationer och kardinalitet
 
-[Beskriv relationerna i ord. Ange exempelvis 1:1 eller 1:N samt om deltagandet är obligatoriskt eller valfritt på respektive sida.]
+| Entitet A           | Entitet B           | Kardinalitet | Obligatoriskt/valfritt | Motivering                                                             |
+|---------------------|---------------------|--------------|------------------------|------------------------------------------------------------------------|
+| department          | employee            | 0..N         | valfritt               | *En avdelning kan ha noll, en eller flera anställda*                   |
+| employee            | department          | 1..1         | obligatoriskt          | *En anställd måste tillhöra exakt en avdelning.*                       |
+| employee            | access_card         | 0..1         | valfritt               | *En anställd kan sakna passerkort eller ha högst ett.*                 |
+| access_card         | employee            | 1..1         | obligatoriskt          | *Ett registrerat passerkort måste tillhöra exakt en anställd.*         |
+| competence          | employee_competence | 0..N         | valfritt               | *En kompetens kan vara kopplad till flera anställda eller ingen alls.* |
+| employee_competence | competence          | 1..1         | obligatoriskt          | *Varje koppling måste hänvisa till exakt en kompetens.*                |
 
-| Entitet A   | Entitet B   | Kardinalitet | Obligatoriskt/valfritt | Motivering                                                     |
-|-------------|-------------|--------------|------------------------|----------------------------------------------------------------|
-| department  | employee    | 0..N         | valfritt               | *En avdelning kan ha noll, en eller flera anställda*           |
-| employee    | department  | 1..1         | obligatoriskt          | *En anställd måste tillhöra exakt en avdelning.*               |
-| employee    | access_card | 0..1         | valfritt               | *En anställd kan sakna passerkort eller ha högst ett.*         |
-| access_card | employee    | 1..1         | obligatoriskt          | *Ett registrerat passerkort måste tillhöra exakt en anställd.* |
+OBS! Den övergripande relationen mellan employee och competence är M:N. Kopplingstabellen delar upp den i två 1:
+N-relationer
 
 ### 2.4 Nycklar, datatyper och begränsningar
 
-[Redovisa dina val av primärnycklar (PK), främmande nycklar (FK), datatyper samt regler som NOT NULL och UNIQUE. Motivera de viktigaste valen.]
-
-| Tabell      | Kolumn             | Datatyp     | PK/FK | Begränsningar   | Motivering                                                                                                                                                                                                                                                                                                                                       |
-|-------------|--------------------|-------------|-------|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| employee    | employee_id        | INT         | PK    | AUTO_INCREMENT  | Varje anstlld identifieras med ett numeriskt ID. PK eftersom varje anställd behöver kunna identifieras entydigt. Flera anställda kan ex. ha samma namn, men deras ID får aldrig vara samma. AUTO_INCREMENT så att MySQL tilldelar automatiskt nytt ID när en anställd registreras. NOT NULL behöver inte anges, då denna kolumn är primärnyckel. |
-|             | first_name         | VARCHAR(30) |       | NOT NULL        | Förnamn lagras som text och måste anges.                                                                                                                                                                                                                                                                                                         |
-|             | last_name          | VARCHAR(30) |       | NOT NULL        | Efternamn lagras som text och måste anges.                                                                                                                                                                                                                                                                                                       |
-|             | email              | VARCHAR(75) |       | NOT NULL UNIQUE | E-postadressen måste finnas och vara unik för varje anställd.                                                                                                                                                                                                                                                                                    |
-|             | employment_date    | DATE        |       | NOT NULL        | Anställningsdatum lagras som datum utan klockslag.                                                                                                                                                                                                                                                                                               |
-|             | department_id      | INT         | FK    | NOT NULL        | FK → department.department_id   <br/>Kopplar den anställde till en befintlig avdelning. Flera anställda får tillhöra samma avdelning.                                                                                                                                                                                                            |
-| department  | department_id      | INT         | PK    | AUTO_INCREMENT  | Varje avdelning identifieras med ett unikt numeriskt ID som genereras automatiskt. Primärnyckeln säkerställer att varje avdelning kan identifieras entydigt.                                                                                                                                                                                     |
-|             | department_name    | VARCHAR(30) |       | NOT NULL        | Avdelningens namn lagras som text och är obligatoriskt.                                                                                                                                                                                                                                                                                          |
-|             | office_location    | VARCHAR(30) |       | NOT NULL        | Kontorsorten lagras som text och är obligatorisk. Värdet behöver inte vara unikt eftersom flera avdelningar kan finnas på samma ort.                                                                                                                                                                                                             |
-| access_card | access_card_id     | INT         | PK    | AUTO_INCREMENT  | Varje passerkort identifieras med ett unikt ID som genereras automatiskt.                                                                                                                                                                                                                                                                        |
-|             | access_card_number | INT         |       | NOT NULL UNIQUE | Varje passerkort måste ha ett unikt kortnummer.                                                                                                                                                                                                                                                                                                  |
-|             | issuance_date      | DATE        |       | NOT NULL        | Datumet då passerkortet utfärdades måste anges.                                                                                                                                                                                                                                                                                                  |
-|             | expiry_date        | DATE        |       | NOT NULL        | Sista giltighetsdatum måste anges för att kunna avgöra när kortet upphör att gälla.                                                                                                                                                                                                                                                              |
-|             | employee_id        | INT         | FK    | NOT NULL UNIQUE | FK → employee.employee_id <br/>Kopplar kortet till en befintlig anställd. NOT NULL säkerställer att kortet har en ägare och UNIQUE förhindrar att en anställd har flera registrerade kort.                                                                                                                                                       |
+| Tabell              | Kolumn             | Datatyp      | PK/FK   | Begränsningar   | Motivering                                                                                                                                                                                                                                                                                                                                       |
+|---------------------|--------------------|--------------|---------|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| employee            | employee_id        | INT          | PK      | AUTO_INCREMENT  | Varje anstlld identifieras med ett numeriskt ID. PK eftersom varje anställd behöver kunna identifieras entydigt. Flera anställda kan ex. ha samma namn, men deras ID får aldrig vara samma. AUTO_INCREMENT så att MySQL tilldelar automatiskt nytt ID när en anställd registreras. NOT NULL behöver inte anges, då denna kolumn är primärnyckel. |
+|                     | first_name         | VARCHAR(30)  |         | NOT NULL        | Förnamn lagras som text och måste anges.                                                                                                                                                                                                                                                                                                         |
+|                     | last_name          | VARCHAR(30)  |         | NOT NULL        | Efternamn lagras som text och måste anges.                                                                                                                                                                                                                                                                                                       |
+|                     | email              | VARCHAR(75)  |         | NOT NULL UNIQUE | E-postadressen måste finnas och vara unik för varje anställd.                                                                                                                                                                                                                                                                                    |
+|                     | employment_date    | DATE         |         | NOT NULL        | Anställningsdatum lagras som datum utan klockslag.                                                                                                                                                                                                                                                                                               |
+|                     | department_id      | INT          | FK      | NOT NULL        | FK → department.department_id   <br/>Kopplar den anställde till en befintlig avdelning. Flera anställda får tillhöra samma avdelning.                                                                                                                                                                                                            |
+| department          | department_id      | INT          | PK      | AUTO_INCREMENT  | Varje avdelning identifieras med ett unikt numeriskt ID som genereras automatiskt. Primärnyckeln säkerställer att varje avdelning kan identifieras entydigt.                                                                                                                                                                                     |
+|                     | department_name    | VARCHAR(30)  |         | NOT NULL        | Avdelningens namn lagras som text och är obligatoriskt.                                                                                                                                                                                                                                                                                          |
+|                     | office_location    | VARCHAR(30)  |         | NOT NULL        | Kontorsorten lagras som text och är obligatorisk. Värdet behöver inte vara unikt eftersom flera avdelningar kan finnas på samma ort.                                                                                                                                                                                                             |
+| access_card         | access_card_id     | INT          | PK      | AUTO_INCREMENT  | Varje passerkort identifieras med ett unikt ID som genereras automatiskt.                                                                                                                                                                                                                                                                        |
+|                     | access_card_number | INT          |         | NOT NULL UNIQUE | Varje passerkort måste ha ett unikt kortnummer.                                                                                                                                                                                                                                                                                                  |
+|                     | issuance_date      | DATE         |         | NOT NULL        | Datumet då passerkortet utfärdades måste anges.                                                                                                                                                                                                                                                                                                  |
+|                     | expiry_date        | DATE         |         | NOT NULL        | Sista giltighetsdatum måste anges för att kunna avgöra när kortet upphör att gälla.                                                                                                                                                                                                                                                              |
+|                     | employee_id        | INT          | FK      | NOT NULL UNIQUE | FK → employee.employee_id <br/>Kopplar kortet till en befintlig anställd. NOT NULL säkerställer att kortet har en ägare och UNIQUE förhindrar att en anställd har flera registrerade kort.                                                                                                                                                       
+| competence          | competence_id      | INT          | PK      | AUTO_INCREMENT  | Varje kompetens identifieras med ett unikt ID som genereras automatiskt.                                                                                                                                                                                                                                                                         |
+|                     | competence_name    | VARCHAR(75)  |         | NOT NULL UNIQUE | Kompetensens namn är obligatoriskt och får inte förekomma flera gånger.                                                                                                                                                                                                                                                                          |
+|                     | description        | VARCHAR(500) |         | NOT NULL        | Beskrivningen lagras som text och ska finnas för varje kompetens.                                                                                                                                                                                                                                                                                |
+| employee_competence | employee_id        | INT          | PK + FK | NOT NULL        | Refererar till employee.employee_id och identifierar den anställde i kopplingen.                                                                                                                                                                                                                                                                 |
+|                     | competence_id      | INT          | PK + FK | NOT NULL        | Refererar till competence.competence_id och identifierar kompetensen i kopplingen.                                                                                                                                                                                                                                                               |
 
 **Regler som modellen måste säkerställa:**
 
-- [Regel 1 och hur den säkerställs]
-- [Regel 2 och hur den säkerställs]
-- [Regel 3 och hur den säkerställs]
+- **Regel 1** – Anställda och avdelningar: Varje anställd måste tillhöra exakt en befintlig avdelning, men en avdelning
+  får
+  sakna anställda. Detta säkerställs genom att employee.department_id är NOT NULL och FOREIGN KEY som refererar till
+  department.department_id. E-postadressen måste dessutom vara unik, vilket säkerställs med UNIQUE på employee.email.
+
+- **Regel 2** – Passerkort: En anställd får ha högst ett passerkort men behöver inte ha något. Varje registrerat
+  passerkort
+  måste tillhöra exakt en anställd. Detta säkerställs genom att access_card.employee_id är NOT NULL, UNIQUE och FOREIGN
+  KEY. En anställd utan passerkort saknar helt enkelt en motsvarande rad i access_card. Även kortnumret måste vara
+  unikt, vilket säkerställs med UNIQUE på access_card_number.
+
+- **Regel 3** – Kompetenser (VG): En anställd kan ha flera kompetenser eller inga alls, och samma kompetens kan finnas
+  hos
+  flera anställda. Detta hanteras genom kopplingstabellen employee_competence, där employee_id och competence_id
+  tillsammans bildar en sammansatt primärnyckel. Båda är även främmande nycklar. På så sätt förhindras dubbla
+  kopplingar, samtidigt som anställda och kompetenser kan registreras utan kopplingar. Kompetensnamnet måste vara unikt,
+  vilket säkerställs med UNIQUE på competence.competence_name.
 
 ### 2.5 Datamodell – bild
 
-![Datamodell för G](images/datamodell-g.png)
+![ER-diagram över personalregistrets databasmodell med fem tabeller och deras relationer (G och VG).](pictures/ER-diagramLABB2.drawio.png "ER-diagram")
 
-[Förklara kort hur diagrammet visar tabellerna och relationerna. Ersätt bildfilen med din egen.]
+*Figur 2. ER-diagram över personalregistrets databasmodell, inklusive kompetenshantering för VG.*
+
+ER-diagrammet ger en översikt över databasens struktur och visar hur de fem tabellerna är kopplade till varandra. I
+diagrammet framgår tabellernas attribut, datatyper, primärnycklar (PK), främmande nycklar (FK) och relationernas
+kardinalitet.
+
+För att behålla diagrammet tydligt och lättläst har jag valt att inte visa alla begränsningar direkt i det.
+Begränsningar som `NOT NULL`, `UNIQUE` och `AUTO_INCREMENT` finns i stället dokumenterade i tabellen under avsnitt 2.4 –
+Nycklar, datatyper och begränsningar, tillsammans med motiveringar till mina val.
+
+På så sätt kompletterar ER-diagrammet och tabellen varandra: diagrammet visar hur databasen är uppbyggd, medan tabellen
+beskriver de regler som ska säkerställa dataintegriteten.
 
 ---
 
