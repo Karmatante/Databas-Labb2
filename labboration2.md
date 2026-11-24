@@ -217,18 +217,6 @@ kompetenser delas av personer från olika avdelningar. Fem anställda saknar reg
 saknar kopplade anställda. Detta gör det möjligt att testa många-till-många-relationen och kontrollera att även poster
 utan kopplingar hanteras korrekt.
 
-**Kontroll av testdata:**
-
-- [x] Flera anställda på samma avdelning
-- [x] Anställda på olika avdelningar
-- [x] Minst en avdelning utan anställda
-- [x] Anställda med passerkort
-- [x] Anställda utan passerkort
-- [x] Anställda med flera kompetenser
-- [x] Flera anställda med samma kompetens
-- [x] Anställda utan kompetenser
-- [x] Kompetenser utan kopplade anställda
-
 **Användning av AI**
 
 Den fiktiva testdatan har tagits fram med hjälp av ChatGPT. AI har använts för att generera namn, avdelningar,
@@ -348,7 +336,7 @@ visas med NULL i kolumnen access_card_number.
 <table>
   <tr>
     <td width="320" valign="top">
-      <a href="pictures/VG1.png.png">
+      <a href="pictures/VG1.png">
         <img src="pictures/VG1.png"
              alt="Resultat av VG1 – anställda med avdelning och eventuellt passerkort"
              width="300">
