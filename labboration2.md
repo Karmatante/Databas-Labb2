@@ -40,7 +40,7 @@ databasen databas_labb2, men inga motsvarande globala behörigheter till övriga
 
 ---
 
-## 2. Datamodellering – G
+## 2. Datamodellering
 
 ### 2.1 Identifierade entiteter
 
@@ -141,7 +141,7 @@ N-relationer
   KEY. En anställd utan passerkort saknar helt enkelt en motsvarande rad i access_card. Även kortnumret måste vara
   unikt, vilket säkerställs med UNIQUE på access_card_number.
 
-- **Regel 3** – Kompetenser (VG): En anställd kan ha flera kompetenser eller inga alls, och samma kompetens kan finnas
+- **Regel 3** – Kompetenser: En anställd kan ha flera kompetenser eller inga alls, och samma kompetens kan finnas
   hos
   flera anställda. Detta hanteras genom kopplingstabellen employee_competence, där employee_id och competence_id
   tillsammans bildar en sammansatt primärnyckel. Båda är även främmande nycklar. På så sätt förhindras dubbla
@@ -167,41 +167,129 @@ beskriver de regler som ska säkerställa dataintegriteten.
 
 ---
 
-## 3. SQL-implementation och testdata – G
+## 3. SQL-implementation och testdata
 
 ### 3.1 Skapade tabeller
 
-**SQL-fil:** `[ange sökvägen till din .sql-fil]`
+**SQL-filer:**
 
-[Förklara i vilken ordning du skapade tabellerna och varför. Beskriv hur tabellerna upprätthåller verksamhetens regler. Själva CREATE TABLE-kommandona finns i SQL-filen.]
+- [`SQL-files/root.sql`](SQL-files/root.sql) – skapar databasen, MySQL-användaren och tilldelar behörigheter.
+- [`SQL-files/personalregister.sql`](SQL-files/personalregister.sql) – skapar tabellerna och lägger in testdata samt
+  innehåller SQL-frågorna.
+
+### Skapande av tabeller och verksamhetsregler
+
+Jag skapade tabellerna i ordningen `department`, `employee`, `access_card`, `competence` och slutligen
+`employee_competence`. Ordningen valdes utifrån tabellernas beroenden. Exempelvis måste `department` finnas innan
+`employee` kan skapas med en främmande nyckel som refererar till avdelningen. På samma sätt behöver både `employee` och
+`competence` finnas innan kopplingstabellen `employee_competence` skapas.
+
+Verksamhetens regler säkerställs genom databasens nycklar och begränsningar:
+
+* **Anställda och avdelningar:** Varje anställd måste tillhöra en befintlig avdelning genom `department_id`, som har
+  `NOT NULL` och `FOREIGN KEY`. En avdelning kan däremot finnas utan anställda. Varje anställd måste också ha en unik
+  e-postadress.
+* **Passerkort:** Varje passerkort måste tillhöra en befintlig anställd. `UNIQUE` på `employee_id` förhindrar att samma
+  person får flera registrerade passerkort. Kortnumret måste också vara unikt.
+* **Kompetenser:** Varje kompetens har ett unikt namn och kan finnas utan att vara kopplad till någon anställd.
+* **Kompetenskopplingar:** Tabellen `employee_competence` hanterar många-till-många-relationen mellan anställda och
+  kompetenser. Den sammansatta primärnyckeln (`employee_id`, `competence_id`) förhindrar dubbla kopplingar, samtidigt
+  som en anställd kan ha flera kompetenser och en kompetens kan delas av flera anställda.
+
+De fullständiga `CREATE TABLE`-kommandona finns i `SQL-files/personalregister.sql`.
 
 ### 3.2 Testdata
 
-[Beskriv kort hur din fiktiva testdata är utformad och hur den täcker kraven. INSERT-kommandona finns i SQL-filen.]
+### Testdata och täckning av verksamhetskraven
 
-- [ ] Flera anställda på samma avdelning
-- [ ] Anställda på olika avdelningar
-- [ ] Minst en avdelning utan anställda
-- [ ] Anställda med passerkort
-- [ ] Anställda utan passerkort
+Jag har skapat fiktiv testdata med **10 avdelningar, 50 anställda, 25 passerkort och 68 kompetenser**. Testdatan är
+utformad för att täcka verksamhetens regler och ge varierade resultat vid SQL-frågor med olika typer av JOIN.
+
+De 50 anställda är fördelade mellan åtta avdelningar, medan Juridik och Kvalitetssäkring saknar personal. Av de
+anställda har 25 passerkort och 25 saknar passerkort. Jag har också inkluderat två personer med samma för- och efternamn
+men olika e-postadresser för att visa att namn inte behöver vara unika.
+
+Jag har lagt till **153 kompetenskopplingar**. De flesta anställda har flera kompetenser, och vissa
+kompetenser delas av personer från olika avdelningar. Fem anställda saknar registrerade kompetenser och fyra kompetenser
+saknar kopplade anställda. Detta gör det möjligt att testa många-till-många-relationen och kontrollera att även poster
+utan kopplingar hanteras korrekt.
+
+**Kontroll av testdata:**
+
+- [x] Flera anställda på samma avdelning
+- [x] Anställda på olika avdelningar
+- [x] Minst en avdelning utan anställda
+- [x] Anställda med passerkort
+- [x] Anställda utan passerkort
+- [x] Anställda med flera kompetenser
+- [x] Flera anställda med samma kompetens
+- [x] Anställda utan kompetenser
+- [x] Kompetenser utan kopplade anställda
+
+**Användning av AI**
+
+Den fiktiva testdatan har tagits fram med hjälp av ChatGPT. AI har använts för att generera namn, avdelningar,
+kompetenser, beskrivningar och tillhörande testvärden. Jag har själv arbetat med databasmodellen, skapat tabellerna i
+MySQL och kontrollerat att testdatan fungerar med databasens relationer och begränsningar.
+
+Samtliga `INSERT INTO`-kommandon finns i `SQL-files/personalregister.sql`.
+
+--- 
 
 ### 3.3 G1 – Anställda med avdelning (INNER JOIN)
 
 **Vad frågan ska visa:** Anställdas förnamn, efternamn och avdelningsnamn.
 
-**SQL-fråga:** [Finns i SQL-filen, ange gärna kommentar eller avsnitt.]
+**SQL-fråga:** [G1 – INNER JOIN](SQL-files/personalregister.sql#L438-L443)
 
-![Resultat av G1](images/g1-inner-join.png)
+```sql
+SELECT e.first_name, e.last_name, d.department_name
+FROM employee e
+         INNER JOIN department d
+                    ON e.department_id = d.department_id;
+```
 
-**Förklaring av resultatet:** [Vad visas? Varför fungerar INNER JOIN här?]
+Frågan visar varje anställds förnamn, efternamn och vilken avdelning personen arbetar på. Resultatet innehåller totalt
+50 rader.
+
+`INNER JOIN` fungerar genom att jämföra `department_id` i tabellen `employee` med `department_id` i tabellen
+`department`. När värdena är lika kopplas den anställda ihop med rätt avdelning, och avdelningens namn kan visas
+tillsammans med personens namn.
+
+Eftersom `INNER JOIN` bara tar med rader där det finns en matchning visas inte avdelningar som saknar anställda. Alla 50
+anställda kommer däremot med eftersom varje anställd har ett `department_id` som motsvarar en befintlig avdelning.
+
+![G1.png](pictures/G1.png)
+
+*Figur 3. Resultat av G1 – INNER JOIN mellan employee och department. Frågan visar 50 anställda med förnamn, efternamn
+och tillhörande avdelning.*
 
 ### 3.4 G2 – Alla avdelningar med anställda (LEFT JOIN)
 
-**Vad frågan ska visa:** Alla avdelningar och deras anställda, även om en avdelning saknar anställda.
+**Vad frågan ska visa:** Alla avdelningar och deras anställda, även avdelningar utan personal.
 
-![Resultat av G2](images/g2-left-join.png)
+**SQL-fråga:** [G2 – LEFT JOIN](SQL-files/personalregister.sql#L446-L453)
 
-**Förklaring av resultatet:** [Vad händer med den tomma avdelningen? Vad visas i de anställdas kolumner?]
+```sql
+SELECT d.department_name,
+       CONCAT(e.first_name, ' ', e.last_name) AS full_name
+FROM department d
+         LEFT JOIN employee e
+                   ON e.department_id = d.department_id;
+```
+
+**Förklaring av resultatet:**
+
+Frågan använder `LEFT JOIN` för att koppla samman `department` och `employee` genom deras gemensamma `department_id`.
+Eftersom `department` står till vänster i kopplingen visas samtliga avdelningar, oavsett om de har anställda eller inte.
+
+Resultatet innehåller 52 rader: 50 anställda och två avdelningar utan personal. Juridik och Kvalitetssäkring visas med
+`NULL` i kolumnen `full_name`, eftersom det inte finns några matchande anställda.
+
+Jag har använt `CONCAT()` för att visa för- och efternamn i samma kolumn.
+
+![G2.png](pictures/G2.png)
+*Figur 4. Resultat av G2 – LEFT JOIN, inklusive avdelningar utan anställda.*
 
 ---
 

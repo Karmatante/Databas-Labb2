@@ -1,8 +1,11 @@
+-- Kontroll av anslutning
 SELECT CURRENT_USER(), DATABASE();
 SHOW GRANTS;
 
 USE databas_labb2;
 
+
+-- region DATABASENS TABELLER SKAPAS
 
 CREATE TABLE department
 (
@@ -48,6 +51,11 @@ CREATE TABLE employee_competence
     FOREIGN KEY (competence_id) REFERENCES competence (competence_id)
 );
 
+-- endregion
+
+-- region TESTDATA FÖR DATABASEN
+
+-- Testdata: 10 avdelningar
 INSERT INTO department (department_name, office_location)
 VALUES ('IT', 'Stockholm'),
        ('Ekonomi', 'Göteborg'),
@@ -60,9 +68,11 @@ VALUES ('IT', 'Stockholm'),
        ('Juridik', 'Stockholm'),
        ('Kvalitetssäkring', 'Örebro');
 
+-- Kontroll: avdelningar
 SELECT *
 FROM department;
 
+-- Testdata: 50 anställda
 INSERT INTO employee
     (first_name, last_name, email, employment_date, department_id)
 VALUES ('Erik', 'Andersson', 'erik.andersson@personalregister.example', '2020-03-15', 1),
@@ -124,10 +134,12 @@ VALUES ('Erik', 'Andersson', 'erik.andersson@personalregister.example', '2020-03
        ('Therese', 'Lindgren', 'therese.lindgren@personalregister.example', '2024-11-04', 8);
 
 
+-- Kontroll: anställdas ID
 SELECT employee_id, first_name, last_name
 FROM employee
 ORDER BY employee_id;
 
+-- Testdata: 25 passerkort
 INSERT INTO access_card (access_card_number, issuance_date, expiry_date, employee_id)
 VALUES (10001, '2024-01-15', '2027-01-15', 1),
        (10002, '2025-03-10', '2028-03-10', 2),
@@ -155,9 +167,11 @@ VALUES (10001, '2024-01-15', '2027-01-15', 1),
        (10024, '2024-05-30', '2027-05-30', 48),
        (10025, '2026-08-17', '2029-08-17', 50);
 
+-- Kontroll: antal passerkort
 SELECT COUNT(*)
 FROM access_card;
 
+-- Testdata: 68 kompetenser
 INSERT INTO competence (competence_name, description)
 VALUES ('Java', 'Utveckling, felsökning och underhåll av applikationer i Java.'),
        ('SQL', 'Hantering och bearbetning av data i relationsdatabaser med SQL.'),
@@ -238,10 +252,12 @@ VALUES ('Java', 'Utveckling, felsökning och underhåll av applikationer i Java.
        ('Digitala tvillingar', 'Skapande av digitala modeller av verkliga produkter, system eller processer.');
 
 
+-- Kontroll: kompetens-ID
 SELECT competence_id, competence_name
 FROM competence
 ORDER BY competence_id;
 
+-- Testdata: 153 kompetenskopplingar
 INSERT INTO employee_competence (employee_id, competence_id)
 VALUES (1, 1),
        (1, 2),
@@ -404,14 +420,37 @@ VALUES (1, 1),
        (49, 63),
        (49, 64);
 
+-- Kontroll: antal kompetenskopplingar
 SELECT COUNT(*) AS antal_kopplingar
 FROM employee_competence;
 
+-- Kontroll: anställda utan kompetenser
 SELECT e.employee_id, e.first_name, e.last_name
 FROM employee e
          LEFT JOIN employee_competence ec
                    ON e.employee_id = ec.employee_id
 WHERE ec.competence_id IS NULL;
 
+-- endregion
+
+-- region JOIN-frågor
+
+-- G1. Anställda med avdelning
+-- Visa anställdas förnamn, efternamn och avdelningsnamn, använd INNER JOIN
+SELECT e.first_name, e.last_name, d.department_name
+FROM employee e
+         INNER JOIN department d
+                    ON e.department_id = d.department_id;
 
 
+-- G2. Avdelningar med anställda
+-- Visa alla avdelningars namn och deras anställdas namn.
+-- Även avdelningar utan anställda ska finnas med (LEFT JOIN)
+SELECT d.department_name,
+       CONCAT(e.first_name, ' ', e.last_name) AS full_name
+FROM department d
+         LEFT JOIN employee e
+                   ON e.department_id = d.department_id;
+
+
+-- endregion
