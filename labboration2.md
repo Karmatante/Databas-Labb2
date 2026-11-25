@@ -514,11 +514,11 @@ FROM department d
 
 <table>
   <tr>
-    <td width="920" valign="top">
+    <td width="620" valign="top">
       <a href="pictures/VG4-1.gif">
         <img src="pictures/VG4-1.gif"
              alt="VG4 – Resultat med INNER JOIN"
-             width="900">
+             width="600">
       </a>
     </td>
     <td valign="top">
@@ -540,11 +540,11 @@ FROM department d
     </td>
   </tr>
   <tr>
-    <td width="920" valign="top">
+    <td width="620" valign="top">
       <a href="pictures/VG4-2.gif">
         <img src="pictures/VG4-2.gif"
              alt="VG4 – Resultat med LEFT JOIN"
-             width="900">
+             width="600">
       </a>
     </td>
     <td valign="top">
@@ -741,11 +741,11 @@ Konsolutskriften dokumenteras nedan med en GIF-animation som visar samtliga 15 a
 
 <table>
   <tr>
-    <td width="920" valign="top">
+    <td width="620" valign="top">
       <a href="pictures/JavaResult.gif">
         <img src="pictures/JavaResult.gif"
              alt="Java – Fullständig konsolutskrift av personalregistret"
-             width="900">
+             width="600">
       </a>
     </td>
     <td valign="top">
