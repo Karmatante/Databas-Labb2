@@ -4,7 +4,6 @@ SHOW GRANTS;
 
 USE databas_labb2;
 
-
 -- region DATABASENS TABELLER SKAPAS
 
 CREATE TABLE department
@@ -433,7 +432,7 @@ WHERE ec.competence_id IS NULL;
 
 -- endregion
 
--- region JOIN-frågor
+-- region JOIN-frågor för uppgiften
 
 -- G1. Anställda med avdelning
 -- Visa anställdas förnamn, efternamn och avdelningsnamn, använd INNER JOIN
@@ -519,3 +518,6 @@ FROM department d
                    ON e.department_id = d.department_id;
 
 -- endregion
+
+SELECT *
+FROM competence;
