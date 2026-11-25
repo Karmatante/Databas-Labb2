@@ -80,7 +80,7 @@ behörigheter inom `databas_labb2`, men inga globala databasbehörigheter.*
 |                         | *employment_date*    | Anställningsdatum                 | Ja             | Nej               |
 |                         | *department_id*      | ID för den anställdes avdelning   | Ja             | Nej               |
 | **department**          | *department_id*      | Unikt ID för avdelningen          | Ja             | Ja                |
-|                         | *departmentName*     | Avdelningens namn                 | Ja             | Nej               |
+|                         | *department_name*    | Avdelningens namn                 | Ja             | Nej               |
 |                         | *office_location*    | Kontorsort                        | Ja             | Nej               |
 | **access_card**         | *access_card_id*     | Unikt internt ID för passerkortet | Ja             | Ja                |
 |                         | *access_card_number* | Unikt kortnummer                  | Ja             | Ja                |
@@ -140,7 +140,7 @@ N-relationer.
 |                     | access_card_number | INT          |         | NOT NULL UNIQUE | Varje passerkort måste ha ett unikt kortnummer.                                                                                                                                                                                                                                                                                                   |
 |                     | issuance_date      | DATE         |         | NOT NULL        | Datumet då passerkortet utfärdades måste anges.                                                                                                                                                                                                                                                                                                   |
 |                     | expiry_date        | DATE         |         | NOT NULL        | Sista giltighetsdatum måste anges för att kunna avgöra när kortet upphör att gälla.                                                                                                                                                                                                                                                               |
-|                     | employee_id        | INT          | FK      | NOT NULL UNIQUE | FK → employee.employee_id <br/>Kopplar kortet till en befintlig anställd. NOT NULL säkerställer att kortet har en ägare och UNIQUE förhindrar att en anställd har flera registrerade kort.                                                                                                                                                        
+|                     | employee_id        | INT          | FK      | NOT NULL UNIQUE | FK → employee.employee_id <br/>Kopplar kortet till en befintlig anställd. NOT NULL säkerställer att kortet har en ägare och UNIQUE förhindrar att en anställd har flera registrerade kort.                                                                                                                                                        |
 | competence          | competence_id      | INT          | PK      | AUTO_INCREMENT  | Varje kompetens identifieras med ett unikt ID som genereras automatiskt.                                                                                                                                                                                                                                                                          |
 |                     | competence_name    | VARCHAR(75)  |         | NOT NULL UNIQUE | Kompetensens namn är obligatoriskt och får inte förekomma flera gånger.                                                                                                                                                                                                                                                                           |
 |                     | description        | VARCHAR(500) |         | NOT NULL        | Beskrivningen lagras som text och ska finnas för varje kompetens.                                                                                                                                                                                                                                                                                 |
@@ -254,9 +254,9 @@ anställda kommer däremot med eftersom varje anställd har ett `department_id` 
 
 <table>
   <tr>
-    <td width="320" valign="top">
+    <td width="620" valign="top">
       <a href="pictures/G1.png">
-        <img src="pictures/G1.png" alt="Resultat av G1 – INNER JOIN" width="300">
+        <img src="pictures/G1.png" alt="Resultat av G1 – INNER JOIN" width="600">
       </a>
     </td>
     <td valign="top">
@@ -292,11 +292,11 @@ Jag har använt `CONCAT()` för att visa för- och efternamn i samma kolumn.
 
 <table>
   <tr>
-    <td width="320" valign="top">
+    <td width="620" valign="top">
       <a href="pictures/G2.png">
         <img src="pictures/G2.png"
              alt="Resultat av G2 – LEFT JOIN"
-             width="300">
+             width="600">
       </a>
     </td>
     <td valign="top">
@@ -335,11 +335,11 @@ visas med NULL i kolumnen access_card_number.
 
 <table>
   <tr>
-    <td width="320" valign="top">
+    <td width="620" valign="top">
       <a href="pictures/VG1.png">
         <img src="pictures/VG1.png"
              alt="Resultat av VG1 – anställda med avdelning och eventuellt passerkort"
-             width="300">
+             width="600">
       </a>
     </td>
     <td valign="top">
@@ -378,11 +378,11 @@ där saknade uppgifter visas som `NULL`. `CONCAT()` används för att kombinera 
 
 <table>
   <tr>
-    <td width="320" valign="top">
+    <td width="620" valign="top">
       <a href="pictures/VG2.png">
         <img src="pictures/VG2.png"
              alt="Resultat av VG2 – avdelningar, anställda och passerkort"
-             width="300">
+             width="600">
       </a>
     </td>
     <td valign="top">
@@ -455,11 +455,11 @@ när passerkort eller kompetenser saknas.
 
 <table>
   <tr>
-    <td width="320" valign="top">
+    <td width="620" valign="top">
       <a href="pictures/VG3.png">
         <img src="pictures/VG3.png"
              alt="VG3 – Resultat för employee_id 1"
-             width="300">
+             width="600">
       </a>
     </td>
     <td valign="top">
@@ -473,11 +473,11 @@ när passerkort eller kompetenser saknas.
     </td>
   </tr>
   <tr>
-    <td width="320" valign="top">
+    <td width="620" valign="top">
       <a href="pictures/VG3-2.png">
         <img src="pictures/VG3-2.png"
              alt="VG3 – Resultat för employee_id 8"
-             width="300">
+             width="600">
       </a>
     </td>
     <td valign="top">
@@ -496,7 +496,7 @@ när passerkort eller kompetenser saknas.
 
 ### 4.6 VG4 – Jämförelse mellan INNER JOIN och LEFT JOIN
 
-**SQL-fråga:** [VG4 – Jämförelse INNER JOIN och LEFT JOIN](SQL-files/personalregister.sql#L506-L519)
+**SQL-fråga:** [VG4 – Jämförelse INNER JOIN och LEFT JOIN](SQL-files/personalregister.sql#L506-L526)
 
 ```sql
 SELECT d.departmentName,
@@ -607,59 +607,183 @@ företagets samtliga avdelningar, även de som för närvarande saknar anställd
 
 ### 5.1 Modellklasser
 
-[Beskriv vilka Java-klasser du skapar för personalregistret och vilka av databasens entiteter de motsvarar.]
+I Java-applikationen har jag skapat fyra modellklasser som motsvarar databasens entiteter. Därutöver har jag skapat två
+klasser för att hantera testdata och köra programmet.
 
-| Java-klass     | Motsvarande entitet | Viktiga egenskaper |
-|----------------|---------------------|--------------------|
-| **Department** | department          | [Fält/egenskaper]  |
+| Java-klass       | Motsvarande entitet       | Viktiga egenskaper                                                                                                                          |
+|------------------|---------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| **Department**   | department                | Avdelnings-ID, avdelningsnamn och kontorsort.                                                                                               |
+| **Employee**     | employee                  | Anställnings-ID, förnamn, efternamn, mejladress, anställningsdatum samt referenser till avdelning, passerkort och en lista med kompetenser. |
+| **AccessCard**   | access_card               | Passerkorts-ID, unikt kortnummer, utfärdandedatum, giltighetsdatum och referens till den anställde.                                         |
+| **Competence**   | competence                | Kompetens-ID, kompetensnamn och beskrivning.                                                                                                |
+| **RegisterData** | Ingen direkt motsvarighet | Skapar och lagrar testdata med hjälp av Map och kopplar samman anställda med avdelningar, passerkort och kompetenser.                       |
+| **Main**         | Ingen direkt motsvarighet | Innehåller programmets main()-metod och skriver ut information om anställda och deras relationer i konsolen.                                |
+
+Relationen mellan `employee` och `competence` representeras i Java genom `List<Competence>` i klassen `Employee`. Därför
+behövs
+ingen separat Java-klass för kopplingstabellen `employee_competence`. Flera anställda kan referera till samma
+`Competence`-objekt.
 
 ### 5.2 Relationer i Java – G
 
-[Förklara hur en anställd kan nå sin avdelning och sitt eventuella passerkort via objektreferenser. Kopplingarna behöver bara gå från den anställde till de andra objekten.]
+I Java har jag representerat relationerna mellan anställda, avdelningar och passerkort genom objektreferenser i stället
+för främmande nycklar.
+
+Klassen `Employee` innehåller ett fält av typen `Department`. Varje anställd får en referens till ett befintligt
+avdelningsobjekt när den skapas. Genom `getDepartment()` kan jag därför komma åt den anställdes avdelning och exempelvis
+hämta avdelningsnamnet med `getDepartmentName()`.
+
+Relationen till `AccessCard` fungerar på liknande sätt, men är valfri. En anställd kan ha ett passerkort eller sakna
+ett. Om personen saknar passerkort är fältet `accessCard` lika med `null`. I `Main` kontrollerar jag därför om
+passerkortet finns innan jag försöker hämta kortnumret.
+
+Jag har även en referens från `AccessCard` tillbaka till `Employee`.
 
 ### 5.3 Kompetenser i Java
 
-[Beskriv hur en anställd kan ha flera kompetenser och hur flera anställda kan hänvisa till samma kompetensobjekt. Motivera valet av referenser och samlingar.]
+Jag har utökat klassen `Employee` med en `List<Competence>`. Jag valde en lista eftersom en anställd kan ha flera
+kompetenser, men också sakna registrerade kompetenser helt.
+
+Kompetenserna skapas som separata objekt i klassen `RegisterData` och lagras i en `Map<Integer, Competence>`, där
+kompetens-ID används som nyckel. När jag tilldelar kompetenser till anställda hämtar jag befintliga objekt från denna
+Map och lägger till referenserna i respektive anställds lista.
+
+Det innebär att flera anställda kan hänvisa till samma kompetensobjekt. Exempelvis har både Erik Andersson och Johan
+Bergström kompetensen SQL, och båda refererar till samma `Competence`-objekt.
+
+I relationsdatabasen hanteras denna många-till-många-relation genom kopplingstabellen `employee_competence`. I Java
+representeras den i stället genom listan med objektreferenser.
+
+Jag har också registrerat tre kompetenser som inte tilldelas någon anställd. Det visar att en kompetens kan existera i
+modellen utan att vara kopplad till en anställd.
 
 ### 5.4 Fiktiva objekt och utskrifter
 
-[Beskriv hur objekten skapas direkt i Java och vad programmet skriver ut.]
+Jag har skapat fiktiva testobjekt direkt i Java-koden genom klassen `RegisterData`. Testdatan utgår från samma uppgifter
+som jag tidigare registrerade i MySQL.
 
-**Kontrollfall för G:**
+I Java-applikationen har jag valt att använda ett urval av databasens testdata: 10 avdelningar, 15 anställda, 7
+passerkort och 34 kompetenser. I databasen `databas_labb2` finns 10 avdelningar, 50 anställda, 25 passerkort och 68
+kompetenser.
 
-- [ ] Anställds namn och avdelning visas
-- [ ] Anställd med passerkort visas
-- [ ] Anställd utan passerkort kan visas
+Jag använder `Map<Integer, Department>`,`Map<Integer, Employee>` och `Map<Integer, Competence>` för att lagra objekten
+och kunna hämta dem med deras ID.
 
-**Kontrollfall för VG:**
+När ett `RegisterData`-objekt skapas körs metoderna som registrerar avdelningarna, skapar de anställda, tilldelar
+passerkort och kopplar kompetenser till de anställda. Avdelningarna skapas först eftersom de anställda behöver kunna
+referera till befintliga avdelningsobjekt. Samma följd som i databasen efterlevdes alltså.
 
-- [ ] Anställds uppgifter, avdelning, passerkort och samtliga kompetenser visas
-- [ ] Samma kompetensobjekt används av flera anställda
-- [ ] Anställd utan registrerade kompetenser kan visas
-- [ ] Kompetens som ännu inte kopplats till någon anställd kan finnas i modellen
-- [ ] G-delens funktionalitet fungerar fortfarande
+I klassen `Main` använder jag en `for-each`-loop för att gå igenom samtliga anställda och skriva ut deras uppgifter i
+konsolen.
 
-**Skärmbild G:** [Lägg in `pictures/java-g.png` när utskriften är klar.]
+Utskriften visar anställnings-ID, namn, mejladress, anställningsdatum, avdelning, eventuellt passerkort och registrerade
+kompetenser.
 
-**Skärmbild VG:** [Lägg in `pictures/java-vg.png` när utskriften är klar.]
+Programmet hanterar även anställda som saknar passerkort eller kompetenser. Om passerkortet saknas visas ett meddelande
+i stället för kortnummer. Om kompetenslistan är tom visas texten *Inga kompetenser registrerade.*
+
+Konsolutskriften dokumenteras nedan med en GIF-animation som visar samtliga 15 anställda och skärmdumpar.
+
+<table>
+  <tr>
+    <td width="620" valign="top">
+      <a href="pictures/JavaResult2.png">
+        <img src="pictures/JavaResult2.png"
+             alt="Java – Personalregistrets konsolutskrift, del 1"
+             width="600">
+      </a>
+    </td>
+    <td valign="top">
+      <p>
+        <strong>Figur 11.</strong>
+        Konsolutskrift från Java-applikationen.
+      </p>
+      <p>
+        Programmet visar anställdas ID, namn,
+        mejladress och anställningsdatum samt
+        tillhörande avdelning, eventuellt
+        passerkort och registrerade kompetenser.
+      </p>
+      <p>
+        <em>Klicka på bilden för att visa den
+        i full storlek.</em>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td width="620" valign="top">
+      <a href="pictures/JavaResult3.png">
+        <img src="pictures/JavaResult3.png"
+             alt="Java – Personalregistrets konsolutskrift, del 2"
+             width="600">
+      </a>
+    </td>
+    <td valign="top">
+      <p>
+        <strong>Figur 12.</strong>
+        Fortsättning av Java-applikationens
+        konsolutskrift.
+      </p>
+      <p>
+        Utskriften demonstrerar hur programmets
+        objekt och relationer används för att
+        visa personalregistrets information.
+        Programmet hanterar även anställda som
+        saknar passerkort eller kompetenser.
+      </p>
+      <p>
+        <em>Klicka på bilden för att visa den
+        i full storlek.</em>
+      </p>
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td width="920" valign="top">
+      <a href="pictures/JavaResult.gif">
+        <img src="pictures/JavaResult.gif"
+             alt="Java – Fullständig konsolutskrift av personalregistret"
+             width="900">
+      </a>
+    </td>
+    <td valign="top">
+      <p>
+        <strong>Figur 13.</strong>
+        Animerad demonstration av Java-applikationens
+        fullständiga konsolutskrift.
+      </p>
+      <p>
+        GIF-animationen visar samtliga 15 anställda
+        med anställnings-ID, namn, mejladress,
+        anställningsdatum och avdelning samt
+        eventuella passerkort och kompetenser.
+      </p>
+      <p>
+        Demonstrationen visar hur relationerna mellan
+        Employee, Department, AccessCard och Competence
+        fungerar i Java-modellen. Även anställda utan
+        passerkort eller registrerade kompetenser visas.
+      </p>
+      <p>
+        <em>Klicka på animationen för att visa
+        den i originalstorlek.</em>
+      </p>
+    </td>
+  </tr>
+</table>
 
 ### 5.5 Så körs programmet
 
-[Ange vilken klass som innehåller `main`-metoden och hur programmet körs i IntelliJ.]
+Java-applikationen startas genom att köra `Main.java` i IntelliJ IDEA. Klassen innehåller programmets `main()`-metod,
+som är startpunkten för applikationen.
 
-**Obs:** Laborationen kräver inte JDBC eller JPA. Java-objekten skapas direkt i programkoden.
+När programmet körs skapas ett objekt av `RegisterData`. Klassens konstruktor anropar metoderna som skapar avdelningar,
+anställda, passerkort och kompetenser samt kopplar ihop objekten.
 
----
+Därefter går `Main` igenom de registrerade anställda med en `for-each`-loop och skriver ut deras uppgifter i konsolen.
 
-## 6. Sammanfattning och reflektion
 
-**Databasmodellen:** [Vilka viktiga designval gjorde du och varför?]
 
-**JOIN-frågorna:** [Vad lärde du dig om INNER JOIN respektive LEFT JOIN?]
-
-**Java-modellen:** [Hur skiljer sig objektens referenser från nycklarna i databasen?]
-
-**Utmaningar och lösningar:** [Beskriv kort något du fick felsöka eller tänka om kring.]
-
----
 

@@ -502,6 +502,31 @@ FROM employee e
                    ON ec.competence_id = c.competence_id
 WHERE e.employee_id = 1;
 
+SELECT e.employee_id,
+       d.departmentName,
+       e.employment_date,
+       COALESCE(
+               CAST(a.access_card_number AS CHAR),
+               'Inget passerkort registrerat'
+       )                                      AS access_card,
+       CONCAT(e.first_name, ' ', e.last_name) AS full_name,
+       COALESCE(
+               CONCAT(c.competence_name, ': ', c.description),
+               'Inga kompetenser registrerade för den anställde'
+       )                                      AS competences
+FROM employee e
+         INNER JOIN department d
+                    ON e.department_id = d.department_id
+         LEFT JOIN access_card a
+                   ON e.employee_id = a.employee_id
+         LEFT JOIN employee_competence ec
+                   ON e.employee_id = ec.employee_id
+         LEFT JOIN competence c
+                   ON ec.competence_id = c.competence_id
+WHERE e.employee_id = 8;
+
+
+
 -- VG4: jämför INNER JOIN och LEFT JOIN
 -- Utgå från Avdelning och hämta avdelningsnamn samt de anställdas förnamn och efternamn.
 -- 1.Kör frågan med INNER JOIN, 2. Kör samma fråga med LEFT JOIN, 3.Visa båda resultaten och förklara skillnaden.
