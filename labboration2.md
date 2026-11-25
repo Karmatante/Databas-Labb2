@@ -242,6 +242,7 @@ FROM employee e
                     ON e.department_id = d.department_id;
 ```
 
+> [!NOTE]
 Frågan visar varje anställds förnamn, efternamn och vilken avdelning personen arbetar på. Resultatet innehåller totalt
 50 rader.
 
@@ -282,6 +283,7 @@ FROM department d
                    ON e.department_id = d.department_id;
 ```
 
+> [!NOTE]
 Frågan använder `LEFT JOIN` för att koppla samman `department` och `employee` genom deras gemensamma `department_id`.
 Eftersom `department` står till vänster i kopplingen visas samtliga avdelningar, oavsett om de har anställda eller inte.
 
@@ -324,6 +326,7 @@ FROM employee e
                    ON e.employee_id = a.employee_id;
 ```
 
+> [!NOTE]
 Frågan använder INNER JOIN för att koppla varje anställd till rätt avdelning genom department_id.
 Eftersom alla anställda måste tillhöra en befintlig avdelning kommer samtliga 50 anställda med i resultatet.
 
@@ -355,33 +358,142 @@ visas med NULL i kolumnen access_card_number.
 
 ### 4.4 VG2 – Avdelningar, anställda och eventuella passerkort
 
-**SQL-fråga:** [Lägg till länk till VG2 i `personalregister.sql` när frågan är färdig.]
+**SQL-fråga:** [VG2 – Avdelningar, anställda och eventuella passerkort](SQL-files/personalregister.sql#L468-L478)
 
-**Skärmbild:** [Lägg in `pictures/vg2.png` när resultatet är klart.]
+```sql
+SELECT d.department_name,
+       a.access_card_number,
+       CONCAT(e.first_name, ' ', e.last_name) AS full_name
+FROM department d
+         LEFT JOIN employee e
+                   ON e.department_id = d.department_id
+         LEFT JOIN access_card a
+                   ON e.employee_id = a.employee_id;
+```
 
-**Förklaring:** [Hur ser du till att både tomma avdelningar och anställda utan passerkort finns kvar?]
+> [!NOTE]
+Frågan använder två `LEFT JOIN` för att visa alla avdelningar, deras anställda och eventuella passerkort.
+
+Jag utgår från `department` för att även få med avdelningar utan personal. Den första kopplingen hämtar anställda via
+`department_id`, medan den andra hämtar eventuella passerkort via `employee_id`.
+
+Eftersom båda kopplingarna använder `LEFT JOIN` behålls även rader utan matchning. Resultatet visar därför **52 rader**,
+där saknade uppgifter visas som `NULL`. `CONCAT()` används för att kombinera för- och efternamn.
+
+<table>
+  <tr>
+    <td width="320" valign="top">
+      <a href="pictures/VG2.png">
+        <img src="pictures/VG2.png"
+             alt="Resultat av VG2 – avdelningar, anställda och passerkort"
+             width="300">
+      </a>
+    </td>
+    <td valign="top">
+      <strong>Figur 6.</strong> Resultat av VG2 – LEFT JOIN
+      mellan department, employee och access_card.
+      Frågan visar alla 10 avdelningar och deras anställda
+      med eventuella passerkort. Juridik och Kvalitetssäkring
+      saknar anställda och visas därför med
+      <code>NULL</code> i både namn- och kortnummerkolumnen.
+      <p><em>Klicka på bilden för att visa den i full storlek.</em></p>
+    </td>
+  </tr>
+</table>
 
 ### 4.5 VG3 – En anställds samlade uppgifter
 
-**SQL-fråga:** [Lägg till länk till VG3 i `personalregister.sql` när frågan är färdig.]
+**SQL-fråga:** [VG3 – Anställda med avdelning, passerkort och kompetenser](SQL-files/personalregister.sql#L483-L494)
 
-[Beskriv vilken anställd du valt och hur frågan hämtar anställdens uppgifter, avdelning, eventuellt passerkort och samtliga kompetenser.]
+```sql
+SELECT e.employee_id,
+       d.department_name,
+       e.employment_date,
+       COALESCE(
+               CAST(a.access_card_number AS CHAR),
+               'Inget passerkort registrerat'
+       )                                      AS access_card,
+       CONCAT(e.first_name, ' ', e.last_name) AS full_name,
+       COALESCE(
+               CONCAT(c.competence_name, ': ', c.description),
+               'Inga kompetenser registrerade för den anställde'
+       )                                      AS competences
+FROM employee e
+         INNER JOIN department d
+                    ON e.department_id = d.department_id
+         LEFT JOIN access_card a
+                   ON e.employee_id = a.employee_id
+         LEFT JOIN employee_competence ec
+                   ON e.employee_id = ec.employee_id
+         LEFT JOIN competence c
+                   ON ec.competence_id = c.competence_id
+WHERE e.employee_id = 8;
+```
 
-**Anställd med flera kompetenser:**
+> [!NOTE]
+Jag har skapat två SQL-frågor för att kontrollera hur databasen hanterar anställda med och utan passerkort och
+registrerade kompetenser. Frågorna är identiska förutom `WHERE`-villkoret, som väljer vilken anställd som ska visas.
 
-**Skärmbild:** [Lägg in `pictures/vg3-flera-kompetenser.png` när resultatet är klart.]
+Frågorna utgår från `employee` och visar anställnings-ID, namn, anställningsdatum, avdelning, passerkort och
+kompetenser. `INNER JOIN` används för att koppla den anställde till sin avdelning, eftersom varje anställd måste
+tillhöra en avdelning.
 
-**Varför kan samma anställd ge flera resultatrader?** [Förklara.]
+För passerkort och kompetenser används `LEFT JOIN`, vilket innebär att den anställde behålls i resultatet även om
+matchande uppgifter saknas. Kompetenserna hämtas via kopplingstabellen `employee_competence`, som hanterar
+många-till-många-relationen mellan anställda och kompetenser.
 
-**Kontroll: anställd utan passerkort:**
+Jag testar först `employee_id = 1`, som har passerkort och flera kompetenser. Personen visas på flera resultatrader
+eftersom varje kompetens ger en egen rad. Det innebär inte att personen är registrerad flera gånger i databasen.
 
-**Skärmbild:** [Lägg in `pictures/vg3-utan-kort.png` när resultatet är klart.]
+Därefter testar jag `employee_id = 8`, som saknar både passerkort och registrerade kompetenser. Personen visas ändå tack
+vare `LEFT JOIN`. Med hjälp av `COALESCE()` ersätter jag `NULL` med förklarande texter, exempelvis *Inget passerkort
+registrerat* och *Inga kompetenser registrerade för den anställde*. `CAST()` används för att omvandla kortnumret till
+text innan det hanteras av `COALESCE()`.
 
-**Kontroll: anställd utan registrerade kompetenser:**
+De två testerna visar att frågorna hanterar valfria relationer korrekt och att anställda inte försvinner ur resultatet
+när passerkort eller kompetenser saknas.
 
-**Skärmbild:** [Lägg in `pictures/vg3-utan-kompetenser.png` när resultatet är klart.]
 
-**Varför visas den anställde ändå i båda kontrollerna?** [Förklara hur LEFT JOIN påverkar resultatet.]
+<table>
+  <tr>
+    <td width="320" valign="top">
+      <a href="pictures/VG3.png">
+        <img src="pictures/VG3.png"
+             alt="VG3 – Resultat för employee_id 1"
+             width="300">
+      </a>
+    </td>
+    <td valign="top">
+      <strong>Figur 7.</strong> Resultat för
+      <code>employee_id = 1</code> (Erik Andersson).
+      Frågan visar anställnings-ID, namn, anställningsdatum,
+      avdelning, passerkort och registrerade kompetenser.
+      Eftersom den anställde har flera kompetenser
+      visas en resultatrad per kompetens.
+      <p><em>Klicka på bilden för att visa den i full storlek.</em></p>
+    </td>
+  </tr>
+  <tr>
+    <td width="320" valign="top">
+      <a href="pictures/VG3-2.png">
+        <img src="pictures/VG3-2.png"
+             alt="VG3 – Resultat för employee_id 8"
+             width="300">
+      </a>
+    </td>
+    <td valign="top">
+      <strong>Figur 8.</strong> Resultat för
+      <code>employee_id = 8</code> (Nora Ek).
+      Den anställde visas trots att passerkort och
+      registrerade kompetenser saknas.
+      Med hjälp av <code>COALESCE()</code> visas
+      förklarande texter i stället för <code>NULL</code>.
+      Detta visar att <code>LEFT JOIN</code> behåller
+      den anställde även när matchande uppgifter saknas.
+      <p><em>Klicka på bilden för att visa den i full storlek.</em></p>
+    </td>
+  </tr>
+</table>
 
 ### 4.6 VG4 – Jämförelse mellan INNER JOIN och LEFT JOIN
 

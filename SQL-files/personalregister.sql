@@ -465,5 +465,43 @@ FROM employee e
          LEFT JOIN access_card a
                    ON e.employee_id = a.employee_id;
 
+-- VG2. Avdelningar med anställda och passerkort
+-- Visa alla avdelningars namn, deras anställdas namn och eventuella
+-- kortnummer. Behåll även tomma avdelningar och anställda utan kort.
+SELECT d.department_name,
+       a.access_card_number,
+       CONCAT(e.first_name, ' ', e.last_name) AS full_name
+FROM department d
+         LEFT JOIN employee e
+                   ON e.department_id = d.department_id
+         LEFT JOIN access_card a
+                   ON e.employee_id = a.employee_id;
+
+-- VG3: en anställds samlade uppgifter
+-- Välj en av de anställda som har flera kompetenser. Hämta i en fråga med LEFT JOIN
+-- Alla uppgifter om den anställde, inklusive: Avdelningens uppgifter. Eventuellt passerkorts uppgifter.Samtliga kompetensers namn och beskrivningar.
+SELECT e.employee_id,
+       d.department_name,
+       e.employment_date,
+       COALESCE(
+               CAST(a.access_card_number AS CHAR),
+               'Inget passerkort registrerat'
+       )                                      AS access_card,
+       CONCAT(e.first_name, ' ', e.last_name) AS full_name,
+       COALESCE(
+               CONCAT(c.competence_name, ': ', c.description),
+               'Inga kompetenser registrerade för den anställde'
+       )                                      AS competences
+FROM employee e
+         INNER JOIN department d
+                    ON e.department_id = d.department_id
+         LEFT JOIN access_card a
+                   ON e.employee_id = a.employee_id
+         LEFT JOIN employee_competence ec
+                   ON e.employee_id = ec.employee_id
+         LEFT JOIN competence c
+                   ON ec.competence_id = c.competence_id
+WHERE e.employee_id = 8;
+
 
 -- endregion
