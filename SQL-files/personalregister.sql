@@ -10,7 +10,7 @@ USE databas_labb2;
 CREATE TABLE department
 (
     department_id   INT AUTO_INCREMENT PRIMARY KEY,
-    department_name VARCHAR(30) NOT NULL,
+    departmentName  VARCHAR(30) NOT NULL,
     office_location VARCHAR(30) NOT NULL
 );
 
@@ -56,7 +56,7 @@ CREATE TABLE employee_competence
 -- region TESTDATA FÖR DATABASEN
 
 -- Testdata: 10 avdelningar
-INSERT INTO department (department_name, office_location)
+INSERT INTO department (departmentName, office_location)
 VALUES ('IT', 'Stockholm'),
        ('Ekonomi', 'Göteborg'),
        ('HR', 'Malmö'),
@@ -437,7 +437,7 @@ WHERE ec.competence_id IS NULL;
 
 -- G1. Anställda med avdelning
 -- Visa anställdas förnamn, efternamn och avdelningsnamn, använd INNER JOIN
-SELECT e.first_name, e.last_name, d.department_name
+SELECT e.first_name, e.last_name, d.departmentName
 FROM employee e
          INNER JOIN department d
                     ON e.department_id = d.department_id;
@@ -446,7 +446,7 @@ FROM employee e
 -- G2. Avdelningar med anställda
 -- Visa alla avdelningars namn och deras anställdas namn.
 -- Även avdelningar utan anställda ska finnas med (LEFT JOIN)
-SELECT d.department_name,
+SELECT d.departmentName,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name
 FROM department d
          LEFT JOIN employee e
@@ -456,7 +456,7 @@ FROM department d
 -- VG1. Anställda med avdelning och passerkort
 -- Visa alla anställdas namn, avdelning och eventuella kortnummer.
 -- Anställda utan passerkort ska också finnas med.
-SELECT d.department_name,
+SELECT d.departmentName,
        a.access_card_number,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name
 FROM employee e
@@ -468,7 +468,7 @@ FROM employee e
 -- VG2. Avdelningar med anställda och passerkort
 -- Visa alla avdelningars namn, deras anställdas namn och eventuella
 -- kortnummer. Behåll även tomma avdelningar och anställda utan kort.
-SELECT d.department_name,
+SELECT d.departmentName,
        a.access_card_number,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name
 FROM department d
@@ -481,7 +481,7 @@ FROM department d
 -- Välj en av de anställda som har flera kompetenser. Hämta i en fråga med LEFT JOIN
 -- Alla uppgifter om den anställde, inklusive: Avdelningens uppgifter. Eventuellt passerkorts uppgifter.Samtliga kompetensers namn och beskrivningar.
 SELECT e.employee_id,
-       d.department_name,
+       d.departmentName,
        e.employment_date,
        COALESCE(
                CAST(a.access_card_number AS CHAR),
@@ -506,13 +506,13 @@ WHERE e.employee_id = 1;
 -- VG4: jämför INNER JOIN och LEFT JOIN
 -- Utgå från Avdelning och hämta avdelningsnamn samt de anställdas förnamn och efternamn.
 -- 1.Kör frågan med INNER JOIN, 2. Kör samma fråga med LEFT JOIN, 3.Visa båda resultaten och förklara skillnaden.
-SELECT d.department_name,
+SELECT d.departmentName,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name
 FROM department d
          INNER JOIN employee e
                     ON e.department_id = d.department_id;
 
-SELECT d.department_name,
+SELECT d.departmentName,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name
 FROM department d
          LEFT JOIN employee e

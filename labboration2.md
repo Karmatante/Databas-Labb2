@@ -80,7 +80,7 @@ behörigheter inom `databas_labb2`, men inga globala databasbehörigheter.*
 |                         | *employment_date*    | Anställningsdatum                 | Ja             | Nej               |
 |                         | *department_id*      | ID för den anställdes avdelning   | Ja             | Nej               |
 | **department**          | *department_id*      | Unikt ID för avdelningen          | Ja             | Ja                |
-|                         | *department_name*    | Avdelningens namn                 | Ja             | Nej               |
+|                         | *departmentName*     | Avdelningens namn                 | Ja             | Nej               |
 |                         | *office_location*    | Kontorsort                        | Ja             | Nej               |
 | **access_card**         | *access_card_id*     | Unikt internt ID för passerkortet | Ja             | Ja                |
 |                         | *access_card_number* | Unikt kortnummer                  | Ja             | Ja                |
@@ -100,7 +100,7 @@ måste tillhöra exakt en anställd. En avdelning kan också existera utan anst�
 ### 2.2.1 Tillvägagångssätt och reflektion kring attributval
 
 Jag utgick från verksamhetsbeskrivningen för att identifiera vilka attribut som behövdes för respektive entitet. Under
-arbetets gång justerade jag modellen för att undvika onödig eller upprepad information, exempelvis department_name i
+arbetets gång justerade jag modellen för att undvika onödig eller upprepad information, exempelvis departmentName i
 employee och employee_count i department.
 
 Jag valde datatyper och begränsningar utifrån verksamhetens krav och tog särskild hänsyn till vilka uppgifter som måste
@@ -134,7 +134,7 @@ N-relationer.
 |                     | employment_date    | DATE         |         | NOT NULL        | Anställningsdatum lagras som datum utan klockslag.                                                                                                                                                                                                                                                                                                |
 |                     | department_id      | INT          | FK      | NOT NULL        | FK → department.department_id   <br/>Kopplar den anställde till en befintlig avdelning. Flera anställda får tillhöra samma avdelning.                                                                                                                                                                                                             |
 | department          | department_id      | INT          | PK      | AUTO_INCREMENT  | Varje avdelning identifieras med ett unikt numeriskt ID som genereras automatiskt. Primärnyckeln säkerställer att varje avdelning kan identifieras entydigt.                                                                                                                                                                                      |
-|                     | department_name    | VARCHAR(30)  |         | NOT NULL        | Avdelningens namn lagras som text och är obligatoriskt.                                                                                                                                                                                                                                                                                           |
+|                     | departmentName     | VARCHAR(30)  |         | NOT NULL        | Avdelningens namn lagras som text och är obligatoriskt.                                                                                                                                                                                                                                                                                           |
 |                     | office_location    | VARCHAR(30)  |         | NOT NULL        | Kontorsorten lagras som text och är obligatorisk. Värdet behöver inte vara unikt eftersom flera avdelningar kan finnas på samma ort.                                                                                                                                                                                                              |
 | access_card         | access_card_id     | INT          | PK      | AUTO_INCREMENT  | Varje passerkort identifieras med ett unikt ID som genereras automatiskt.                                                                                                                                                                                                                                                                         |
 |                     | access_card_number | INT          |         | NOT NULL UNIQUE | Varje passerkort måste ha ett unikt kortnummer.                                                                                                                                                                                                                                                                                                   |
@@ -236,7 +236,7 @@ Samtliga `INSERT INTO`-kommandon finns i `SQL-files/personalregister.sql`.
 **SQL-fråga:** [G1 – INNER JOIN](SQL-files/personalregister.sql#L438-L443)
 
 ```sql
-SELECT e.first_name, e.last_name, d.department_name
+SELECT e.first_name, e.last_name, d.departmentName
 FROM employee e
          INNER JOIN department d
                     ON e.department_id = d.department_id;
@@ -275,7 +275,7 @@ anställda kommer däremot med eftersom varje anställd har ett `department_id` 
 **SQL-fråga:** [G2 – LEFT JOIN](SQL-files/personalregister.sql#L446-L453)
 
 ```sql
-SELECT d.department_name,
+SELECT d.departmentName,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name
 FROM department d
          LEFT JOIN employee e
@@ -314,7 +314,7 @@ Jag har använt `CONCAT()` för att visa för- och efternamn i samma kolumn.
 **SQL-fråga:** [VG1 – Anställda med avdelning och passerkort](SQL-files/personalregister.sql#L456-L466)
 
 ```sql
-SELECT d.department_name,
+SELECT d.departmentName,
        a.access_card_number,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name
 FROM employee e
@@ -358,7 +358,7 @@ visas med NULL i kolumnen access_card_number.
 **SQL-fråga:** [VG2 – Avdelningar, anställda och eventuella passerkort](SQL-files/personalregister.sql#L468-L478)
 
 ```sql
-SELECT d.department_name,
+SELECT d.departmentName,
        a.access_card_number,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name
 FROM department d
@@ -403,7 +403,7 @@ där saknade uppgifter visas som `NULL`. `CONCAT()` används för att kombinera 
 
 ```sql
 SELECT e.employee_id,
-       d.department_name,
+       d.departmentName,
        e.employment_date,
        COALESCE(
                CAST(a.access_card_number AS CHAR),
@@ -499,13 +499,13 @@ när passerkort eller kompetenser saknas.
 **SQL-fråga:** [VG4 – Jämförelse INNER JOIN och LEFT JOIN](SQL-files/personalregister.sql#L506-L519)
 
 ```sql
-SELECT d.department_name,
+SELECT d.departmentName,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name
 FROM department d
          INNER JOIN employee e
                     ON e.department_id = d.department_id;
 
-SELECT d.department_name,
+SELECT d.departmentName,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name
 FROM department d
          LEFT JOIN employee e
@@ -594,7 +594,7 @@ mellan båda tabellerna utesluts dessa avdelningar från resultatet.
 *Slutsats:*
 
 Med INNER JOIN får jag 50 resultatrader, medan jag med LEFT JOIN får 52 resultatrader. De två extra raderna
-representerar avdelningarna Juridik och Kvalitetssäkring, där avdelningsnamnet visas i kolumnen department_name, men
+representerar avdelningarna Juridik och Kvalitetssäkring, där avdelningsnamnet visas i kolumnen departmentName, men
 värdet i kolumnen full_name är NULL.
 
 Vilken typ av JOIN som är lämpligast beror därför på vilken information jag vill få fram. Om jag endast vill visa
@@ -609,9 +609,9 @@ företagets samtliga avdelningar, även de som för närvarande saknar anställd
 
 [Beskriv vilka Java-klasser du skapar för personalregistret och vilka av databasens entiteter de motsvarar.]
 
-| Java-klass | Motsvarande entitet | Viktiga egenskaper |
-|------------|---------------------|--------------------|
-| [Klass]    | [Entitet]           | [Fält/egenskaper]  |
+| Java-klass     | Motsvarande entitet | Viktiga egenskaper |
+|----------------|---------------------|--------------------|
+| **Department** | department          | [Fält/egenskaper]  |
 
 ### 5.2 Relationer i Java – G
 
