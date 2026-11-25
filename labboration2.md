@@ -242,7 +242,6 @@ FROM employee e
                     ON e.department_id = d.department_id;
 ```
 
-> [!NOTE]
 Frågan visar varje anställds förnamn, efternamn och vilken avdelning personen arbetar på. Resultatet innehåller totalt
 50 rader.
 
@@ -283,7 +282,6 @@ FROM department d
                    ON e.department_id = d.department_id;
 ```
 
-> [!NOTE]
 Frågan använder `LEFT JOIN` för att koppla samman `department` och `employee` genom deras gemensamma `department_id`.
 Eftersom `department` står till vänster i kopplingen visas samtliga avdelningar, oavsett om de har anställda eller inte.
 
@@ -326,7 +324,6 @@ FROM employee e
                    ON e.employee_id = a.employee_id;
 ```
 
-> [!NOTE]
 Frågan använder INNER JOIN för att koppla varje anställd till rätt avdelning genom department_id.
 Eftersom alla anställda måste tillhöra en befintlig avdelning kommer samtliga 50 anställda med i resultatet.
 
@@ -371,7 +368,6 @@ FROM department d
                    ON e.employee_id = a.employee_id;
 ```
 
-> [!NOTE]
 Frågan använder två `LEFT JOIN` för att visa alla avdelningar, deras anställda och eventuella passerkort.
 
 Jag utgår från `department` för att även få med avdelningar utan personal. Den första kopplingen hämtar anställda via
@@ -430,7 +426,6 @@ FROM employee e
 WHERE e.employee_id = 8;
 ```
 
-> [!NOTE]
 Jag har skapat två SQL-frågor för att kontrollera hur databasen hanterar anställda med och utan passerkort och
 registrerade kompetenser. Frågorna är identiska förutom `WHERE`-villkoret, som väljer vilken anställd som ska visas.
 
@@ -501,21 +496,110 @@ när passerkort eller kompetenser saknas.
 
 ### 4.6 VG4 – Jämförelse mellan INNER JOIN och LEFT JOIN
 
-**SQL-frågor:** [Lägg till länkar till jämförelsefrågorna i `personalregister.sql` när de är färdiga.]
+**SQL-fråga:** [VG4 – Jämförelse INNER JOIN och LEFT JOIN](SQL-files/personalregister.sql#L506-L519)
 
-**INNER JOIN – resultat:**
+```sql
+SELECT d.department_name,
+       CONCAT(e.first_name, ' ', e.last_name) AS full_name
+FROM department d
+         INNER JOIN employee e
+                    ON e.department_id = d.department_id;
 
-**Skärmbild:** [Lägg in `pictures/vg4-inner-join.png` när resultatet är klart.]
+SELECT d.department_name,
+       CONCAT(e.first_name, ' ', e.last_name) AS full_name
+FROM department d
+         LEFT JOIN employee e
+                   ON e.department_id = d.department_id;
+```
 
-**LEFT JOIN – resultat:**
+<table>
+  <tr>
+    <td width="920" valign="top">
+      <a href="pictures/VG4-1.gif">
+        <img src="pictures/VG4-1.gif"
+             alt="VG4 – Resultat med INNER JOIN"
+             width="900">
+      </a>
+    </td>
+    <td valign="top">
+      <strong>Figur 9.</strong> Resultat med
+      <code>INNER JOIN</code>.
+      Animationen visar hur tabellerna <code>department</code>
+      och <code>employee</code> kopplas samman med hjälp av
+      deras gemensamma <code>department_id</code>.
+      Med hjälp av <code>CONCAT()</code> sammanfogas de
+      anställdas förnamn och efternamn till ett fullständigt
+      namn i kolumnen <code>full_name</code>.
+      Resultatet innehåller 50 rader och visar endast
+      avdelningar som har minst en anställd.
+      Avdelningar utan anställda visas inte, eftersom
+      <code>INNER JOIN</code> kräver en matchning mellan
+      båda tabellerna.
+      <p><em>Öppna GIF-filen i en webbläsare för att
+      visa animationen i originalstorlek.</em></p>
+    </td>
+  </tr>
+  <tr>
+    <td width="920" valign="top">
+      <a href="pictures/VG4-2.gif">
+        <img src="pictures/VG4-2.gif"
+             alt="VG4 – Resultat med LEFT JOIN"
+             width="900">
+      </a>
+    </td>
+    <td valign="top">
+      <strong>Figur 10.</strong> Resultat med
+      <code>LEFT JOIN</code>.
+      Animationen visar samma SQL-fråga, men med
+      <code>LEFT JOIN</code> i stället för
+      <code>INNER JOIN</code>.
+      Resultatet innehåller 52 rader, eftersom samtliga
+      avdelningar från tabellen <code>department</code>
+      inkluderas, även när det inte finns några matchande
+      anställda i tabellen <code>employee</code>.
+      Längst ned i resultatet visas avdelningarna Juridik
+      och Kvalitetssäkring, som saknar anställda.
+      För dessa avdelningar visas <code>NULL</code>
+      i kolumnen <code>full_name</code>.
+      Detta illustrerar den grundläggande skillnaden
+      mellan <code>INNER JOIN</code> och
+      <code>LEFT JOIN</code>.
+      <p><em>Öppna GIF-filen i en webbläsare för att
+      visa animationen i originalstorlek.</em></p>
+    </td>
+  </tr>
+</table>
 
-**Skärmbild:** [Lägg in `pictures/vg4-left-join.png` när resultatet är klart.]
+#### Jämförelse mellan INNER JOIN och LEFT JOIN ####
 
-**Jämförelse:**
+*Varför finns avdelningar utan anställda kvar med LEFT JOIN?*
 
-- Vilken avdelning försvinner med INNER JOIN? [Svar]
-- Varför finns den kvar med LEFT JOIN? [Svar]
-- Vad visas i kolumnerna för anställda på den raden? [Svar]
+LEFT JOIN returnerar samtliga rader från den vänstra tabellen (department), även om det inte finns någon matchande rad i
+den högra tabellen (employee). Eftersom avdelningarna finns registrerade i tabellen department visas de i resultatet,
+trots att inga anställda är kopplade till dem via department_id.
+
+*Vad visas i kolumnerna för anställda på dessa rader?*
+
+I kolumnerna som hämtar information från tabellen employee visas NULL, eftersom det inte finns någon matchande anställd.
+NULL innebär här att det saknas ett värde, inte att värdet är noll eller en tom textsträng. Information som hämtas från
+tabellen department, exempelvis avdelningens namn, visas däremot fortfarande.
+
+*Vilken avdelning försvinner med INNER JOIN?*
+
+I min databas försvinner två avdelningar, Juridik och Kvalitetssäkring, när jag använder INNER JOIN. Anledningen är att
+dessa avdelningar inte har några registrerade anställda. Det finns alltså inga rader i tabellen employee vars
+department_id matchar dessa avdelningars department_id i tabellen department. Eftersom INNER JOIN kräver en matchning
+mellan båda tabellerna utesluts dessa avdelningar från resultatet.
+
+*Slutsats:*
+
+Med INNER JOIN får jag 50 resultatrader, medan jag med LEFT JOIN får 52 resultatrader. De två extra raderna
+representerar avdelningarna Juridik och Kvalitetssäkring, där avdelningsnamnet visas i kolumnen department_name, men
+värdet i kolumnen full_name är NULL.
+
+Vilken typ av JOIN som är lämpligast beror därför på vilken information jag vill få fram. Om jag endast vill visa
+avdelningar med registrerade anställda är INNER JOIN lämplig. Om jag däremot vill få en fullständig överblick över
+företagets samtliga avdelningar, även de som för närvarande saknar anställda, är LEFT JOIN det bättre alternativet.
 
 ---
 

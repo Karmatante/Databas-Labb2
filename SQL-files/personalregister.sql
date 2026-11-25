@@ -501,7 +501,21 @@ FROM employee e
                    ON e.employee_id = ec.employee_id
          LEFT JOIN competence c
                    ON ec.competence_id = c.competence_id
-WHERE e.employee_id = 8;
+WHERE e.employee_id = 1;
 
+-- VG4: jämför INNER JOIN och LEFT JOIN
+-- Utgå från Avdelning och hämta avdelningsnamn samt de anställdas förnamn och efternamn.
+-- 1.Kör frågan med INNER JOIN, 2. Kör samma fråga med LEFT JOIN, 3.Visa båda resultaten och förklara skillnaden.
+SELECT d.department_name,
+       CONCAT(e.first_name, ' ', e.last_name) AS full_name
+FROM department d
+         INNER JOIN employee e
+                    ON e.department_id = d.department_id;
+
+SELECT d.department_name,
+       CONCAT(e.first_name, ' ', e.last_name) AS full_name
+FROM department d
+         LEFT JOIN employee e
+                   ON e.department_id = d.department_id;
 
 -- endregion
