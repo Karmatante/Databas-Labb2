@@ -450,6 +450,10 @@ vare `LEFT JOIN`. Med hjälp av `COALESCE()` ersätter jag `NULL` med förklaran
 registrerat* och *Inga kompetenser registrerade för den anställde*. `CAST()` används för att omvandla kortnumret till
 text innan det hanteras av `COALESCE()`.
 
+`COALESCE()` och `CAST()` är två SQL-funktioner som jag hittade när jag undersökte hur jag kunde hantera och presentera
+`NULL`-värden på ett tydligare sätt. Med `COALESCE()` kan jag ersätta `NULL` med en förklarande text, medan `CAST()`
+används för att omvandla kortnumret från heltal till text.
+
 De två testerna visar att frågorna hanterar valfria relationer korrekt och att anställda inte försvinner ur resultatet
 när passerkort eller kompetenser saknas.
 
