@@ -1,4 +1,4 @@
-# Laboration 2 – Företagets personalregister
+# Laboration 2 – Del 1: Företagets personalregister
 
 ## 1. Databas och behörigheter
 
@@ -172,7 +172,7 @@ Jag har själv kontrollerat att testdatan följer databasens relationer och begr
 
 ## 4. SQL-frågor
 
-### 4.1 Anställda med avdelning (INNER JOIN)
+### 4.1 G1 Anställda med avdelning (INNER JOIN)
 
 **Syfte:** Visa anställdas förnamn, efternamn och avdelningsnamn.
 
@@ -228,7 +228,7 @@ FROM employee e
   </tr>
 </table>
 
-### 4.2 Alla avdelningar med anställda (LEFT JOIN)
+### 4.2 G2 Alla avdelningar med anställda (LEFT JOIN)
 
 **Syfte:** Visa alla avdelningar och deras anställda,
 även avdelningar utan personal.
@@ -290,9 +290,81 @@ FROM department d
   </tr>
 </table>
 
-### 4.4 VG2 – Avdelningar, anställda och eventuella passerkort
+### 4.3 VG1 Anställda med avdelning och eventuellt passerkort
 
-**SQL-fråga:** [VG2 – Avdelningar, anställda och eventuella passerkort](SQL-files/personalregister.sql#L468-L596)
+**Syfte:** Visa samtliga anställda med deras tillhörande
+avdelningar och eventuella passerkort, även anställda
+som saknar passerkort.
+
+**SQL-fråga:** [Anställda med avdelning och passerkort](SQL-files/personalregister.sql#L456-L466)
+
+```sql
+SELECT d.department_name,
+       a.access_card_number,
+       CONCAT(e.first_name, ' ', e.last_name) AS full_name
+FROM employee e
+         INNER JOIN department d
+                    ON e.department_id = d.department_id
+         LEFT JOIN access_card a
+                   ON e.employee_id = a.employee_id;
+```
+
+<table>
+  <tr>
+    <td width="620" valign="top">
+      <a href="pictures/VG1.png">
+        <img src="pictures/VG1.png"
+             alt="Anställda med avdelning och eventuellt passerkort"
+             width="600">
+      </a>
+    </td>
+    <td valign="top">
+      <strong>Figur 5. Resultat och förklaring</strong>
+      <p>
+        <code>INNER JOIN</code> kopplar samman tabellerna
+        <code>employee</code> och <code>department</code>
+        genom deras gemensamma <code>department_id</code>.
+        Jag har valt denna JOIN-typ eftersom varje anställd
+        måste tillhöra en befintlig avdelning.
+      </p>
+      <p>
+        Därefter används <code>LEFT JOIN</code> för att
+        koppla anställda till <code>access_card</code>
+        genom att jämföra primärnyckeln
+        <code>employee.employee_id</code> med den främmande
+        nyckeln <code>access_card.employee_id</code>.
+      </p>
+      <p>
+        Eftersom relationen till passerkort är valfri
+        används <code>LEFT JOIN</code> för att behålla
+        samtliga anställda, även de som saknar passerkort.
+      </p>
+      <p>
+        Resultatet innehåller 50 rader. De 25 anställda
+        som har passerkort visas med sina kortnummer,
+        medan resterande 25 visas med <code>NULL</code>
+        i kolumnen <code>access_card_number</code>.
+      </p>
+      <p>
+        Varje anställd visas endast en gång eftersom
+        <code>UNIQUE</code> på
+        <code>access_card.employee_id</code> säkerställer
+        att en anställd kan ha högst ett passerkort.
+      </p>
+      <p>
+        <em>Klicka på bilden för att visa den i full storlek.</em>
+      </p>
+    </td>
+  </tr>
+</table>
+
+### 4.4 VG2 Avdelningar med anställda och eventuella passerkort
+
+**Syfte:** Visa samtliga avdelningar, deras anställda och
+eventuella passerkort, inklusive avdelningar utan anställda
+och anställda utan passerkort.
+
+**SQL-fråga:** [Avdelningar med anställda och passerkort](SQL-files/personalregister.sql#L468-L478)
 
 ```sql
 SELECT d.department_name,
@@ -305,36 +377,62 @@ FROM department d
                    ON e.employee_id = a.employee_id;
 ```
 
-Frågan använder två `LEFT JOIN` för att visa alla avdelningar, deras anställda och eventuella passerkort.
-
-Jag utgår från `department` för att även få med avdelningar utan personal. Den första kopplingen hämtar anställda via
-`department_id`, medan den andra hämtar eventuella passerkort via `employee_id`.
-
-Eftersom båda kopplingarna använder `LEFT JOIN` behålls även rader utan matchning. Resultatet visar därför **52 rader**,
-där saknade uppgifter visas som `NULL`. `CONCAT()` används för att kombinera för- och efternamn.
-
 <table>
   <tr>
     <td width="620" valign="top">
       <a href="pictures/VG2.png">
         <img src="pictures/VG2.png"
-             alt="Resultat av VG2 – avdelningar, anställda och passerkort"
+             alt="Avdelningar med anställda och eventuella passerkort"
              width="600">
       </a>
     </td>
     <td valign="top">
-      <strong>Figur 6.</strong> Resultat av VG2 – LEFT JOIN
-      mellan department, employee och access_card.
-      Frågan visar alla 10 avdelningar och deras anställda
-      med eventuella passerkort. Juridik och Kvalitetssäkring
-      saknar anställda och visas därför med
-      <code>NULL</code> i både namn- och kortnummerkolumnen.
-      <p><em>Klicka på bilden för att visa den i full storlek.</em></p>
+      <strong>Figur 6. Resultat och förklaring</strong>
+      <p>
+        Frågan utgår från <code>department</code> och
+        använder två <code>LEFT JOIN</code> för att
+        behålla samtliga avdelningar, även när anställda
+        eller passerkort saknas.
+      </p>
+      <p>
+        Den första kopplingen hämtar anställda genom
+        att jämföra primärnyckeln
+        <code>department.department_id</code> med den
+        främmande nyckeln <code>employee.department_id</code>.
+      </p>
+      <p>
+        Den andra kopplingen hämtar eventuella passerkort
+        genom att jämföra <code>employee.employee_id</code>
+        med <code>access_card.employee_id</code>.
+        Anställda utan passerkort behålls eftersom även
+        denna koppling använder <code>LEFT JOIN</code>.
+      </p>
+      <p>
+        Resultatet innehåller 52 rader: 25 anställda med
+        passerkort, 25 anställda utan passerkort och två
+        avdelningar utan anställda.
+      </p>
+      <p>
+        Juridik och Kvalitetssäkring visas med
+        <code>NULL</code> i både <code>full_name</code>
+        och <code>access_card_number</code>. Anställda
+        utan passerkort visas däremot med sitt namn,
+        men med <code>NULL</code> som kortnummer.
+      </p>
+      <p>
+        Resultatet visar därmed hur flera valfria
+        kopplingar kan hanteras i samma SQL-fråga
+        utan att information om avdelningar eller
+        anställda går förlorad.
+      </p>
+      <p>
+        <em>Klicka på bilden för att visa den i full storlek.</em>
+      </p>
     </td>
   </tr>
 </table>
 
-### 4.5 En anställds samlade uppgifter
+### 4.5 VG3 En anställds samlade uppgifter
 
 **Syfte:** Hämta en anställds person- och anställningsuppgifter,
 avdelningsuppgifter, eventuellt passerkort samt samtliga
@@ -523,7 +621,7 @@ flera resultatrader för samma anställd och att LEFT JOIN
 behåller den anställde även när en eller båda de valfria
 relationerna saknas.
 
-### 4.6 Jämförelse mellan INNER JOIN och LEFT JOIN
+### 4.6 VG4 Jämförelse mellan INNER JOIN och LEFT JOIN
 
 **Syfte:** Undersöka hur valet av JOIN-typ påverkar
 resultatet när det finns avdelningar utan anställda.
