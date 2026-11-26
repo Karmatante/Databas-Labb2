@@ -174,7 +174,6 @@ Jag har själv kontrollerat att testdatan följer databasens relationer och begr
 
 > [!NOTE]
 **Användning av AI**
-
 Jag har använt ChatGPT som stöd för att skapa HTML-koden till tabellerna i min Markdown-dokumentation. Syftet var att
 kunna presentera skärmdumpar och GIF-animationer tillsammans med tillhörande beskrivningar på ett tydligt och enhetligt
 sätt.
