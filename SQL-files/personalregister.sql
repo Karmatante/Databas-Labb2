@@ -9,7 +9,7 @@ USE databas_labb2;
 CREATE TABLE department
 (
     department_id   INT AUTO_INCREMENT PRIMARY KEY,
-    departmentName  VARCHAR(30) NOT NULL,
+    department_name VARCHAR(30) NOT NULL,
     office_location VARCHAR(30) NOT NULL
 );
 
@@ -55,7 +55,7 @@ CREATE TABLE employee_competence
 -- region TESTDATA FÖR DATABASEN
 
 -- Testdata: 10 avdelningar
-INSERT INTO department (departmentName, office_location)
+INSERT INTO department (department_name, office_location)
 VALUES ('IT', 'Stockholm'),
        ('Ekonomi', 'Göteborg'),
        ('HR', 'Malmö'),
@@ -436,7 +436,7 @@ WHERE ec.competence_id IS NULL;
 
 -- G1. Anställda med avdelning
 -- Visa anställdas förnamn, efternamn och avdelningsnamn, använd INNER JOIN
-SELECT e.first_name, e.last_name, d.departmentName
+SELECT e.first_name, e.last_name, d.department_name
 FROM employee e
          INNER JOIN department d
                     ON e.department_id = d.department_id;
@@ -445,7 +445,7 @@ FROM employee e
 -- G2. Avdelningar med anställda
 -- Visa alla avdelningars namn och deras anställdas namn.
 -- Även avdelningar utan anställda ska finnas med (LEFT JOIN)
-SELECT d.departmentName,
+SELECT d.department_name,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name
 FROM department d
          LEFT JOIN employee e
@@ -455,7 +455,7 @@ FROM department d
 -- VG1. Anställda med avdelning och passerkort
 -- Visa alla anställdas namn, avdelning och eventuella kortnummer.
 -- Anställda utan passerkort ska också finnas med.
-SELECT d.departmentName,
+SELECT d.department_name,
        a.access_card_number,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name
 FROM employee e
@@ -467,7 +467,7 @@ FROM employee e
 -- VG2. Avdelningar med anställda och passerkort
 -- Visa alla avdelningars namn, deras anställdas namn och eventuella
 -- kortnummer. Behåll även tomma avdelningar och anställda utan kort.
-SELECT d.departmentName,
+SELECT d.department_name,
        a.access_card_number,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name
 FROM department d
@@ -478,17 +478,23 @@ FROM department d
 
 -- VG3: en anställds samlade uppgifter
 -- Välj en av de anställda som har flera kompetenser. Hämta i en fråga med LEFT JOIN
--- Alla uppgifter om den anställde, inklusive: Avdelningens uppgifter. Eventuellt passerkorts uppgifter.Samtliga kompetensers namn och beskrivningar.
+-- Alla uppgifter om den anställde, inklusive: Avdelningens uppgifter. Eventuellt passerkorts uppgifter. Samtliga kompetensers namn och beskrivningar.
 SELECT e.employee_id,
-       d.departmentName,
        e.employment_date,
+       e.email,
+       d.department_id,
+       d.department_name,
+       d.office_location,
+       a.access_card_id,
        COALESCE(
                CAST(a.access_card_number AS CHAR),
                'Inget passerkort registrerat'
        )                                      AS access_card,
+       a.issuance_date,
+       a.expiry_date,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name,
        COALESCE(
-               CONCAT(c.competence_name, ': ', c.description),
+               CONCAT(c.competence_id, ' ', c.competence_name, ': ', c.description),
                'Inga kompetenser registrerade för den anställde'
        )                                      AS competences
 FROM employee e
@@ -503,15 +509,79 @@ FROM employee e
 WHERE e.employee_id = 1;
 
 SELECT e.employee_id,
-       d.departmentName,
        e.employment_date,
+       e.email,
+       d.department_id,
+       d.department_name,
+       d.office_location,
+       a.access_card_id,
        COALESCE(
                CAST(a.access_card_number AS CHAR),
                'Inget passerkort registrerat'
        )                                      AS access_card,
+       a.issuance_date,
+       a.expiry_date,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name,
        COALESCE(
-               CONCAT(c.competence_name, ': ', c.description),
+               CONCAT(c.competence_id, ' ', c.competence_name, ': ', c.description),
+               'Inga kompetenser registrerade för den anställde'
+       )                                      AS competences
+FROM employee e
+         INNER JOIN department d
+                    ON e.department_id = d.department_id
+         LEFT JOIN access_card a
+                   ON e.employee_id = a.employee_id
+         LEFT JOIN employee_competence ec
+                   ON e.employee_id = ec.employee_id
+         LEFT JOIN competence c
+                   ON ec.competence_id = c.competence_id
+WHERE e.employee_id = 3;
+
+SELECT e.employee_id,
+       e.employment_date,
+       e.email,
+       d.department_id,
+       d.department_name,
+       d.office_location,
+       a.access_card_id,
+       COALESCE(
+               CAST(a.access_card_number AS CHAR),
+               'Inget passerkort registrerat'
+       )                                      AS access_card,
+       a.issuance_date,
+       a.expiry_date,
+       CONCAT(e.first_name, ' ', e.last_name) AS full_name,
+       COALESCE(
+               CONCAT(c.competence_id, ' ', c.competence_name, ': ', c.description),
+               'Inga kompetenser registrerade för den anställde'
+       )                                      AS competences
+FROM employee e
+         INNER JOIN department d
+                    ON e.department_id = d.department_id
+         LEFT JOIN access_card a
+                   ON e.employee_id = a.employee_id
+         LEFT JOIN employee_competence ec
+                   ON e.employee_id = ec.employee_id
+         LEFT JOIN competence c
+                   ON ec.competence_id = c.competence_id
+WHERE e.employee_id = 32;
+
+SELECT e.employee_id,
+       e.employment_date,
+       e.email,
+       d.department_id,
+       d.department_name,
+       d.office_location,
+       a.access_card_id,
+       COALESCE(
+               CAST(a.access_card_number AS CHAR),
+               'Inget passerkort registrerat'
+       )                                      AS access_card,
+       a.issuance_date,
+       a.expiry_date,
+       CONCAT(e.first_name, ' ', e.last_name) AS full_name,
+       COALESCE(
+               CONCAT(c.competence_id, ' ', c.competence_name, ': ', c.description),
                'Inga kompetenser registrerade för den anställde'
        )                                      AS competences
 FROM employee e
@@ -525,18 +595,16 @@ FROM employee e
                    ON ec.competence_id = c.competence_id
 WHERE e.employee_id = 8;
 
-
-
 -- VG4: jämför INNER JOIN och LEFT JOIN
 -- Utgå från Avdelning och hämta avdelningsnamn samt de anställdas förnamn och efternamn.
 -- 1.Kör frågan med INNER JOIN, 2. Kör samma fråga med LEFT JOIN, 3.Visa båda resultaten och förklara skillnaden.
-SELECT d.departmentName,
+SELECT d.department_name,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name
 FROM department d
          INNER JOIN employee e
                     ON e.department_id = d.department_id;
 
-SELECT d.departmentName,
+SELECT d.department_name,
        CONCAT(e.first_name, ' ', e.last_name) AS full_name
 FROM department d
          LEFT JOIN employee e
@@ -544,5 +612,3 @@ FROM department d
 
 -- endregion
 
-SELECT *
-FROM competence;
