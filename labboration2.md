@@ -172,11 +172,21 @@ Jag har själv kontrollerat att testdatan följer databasens relationer och begr
 
 ## 4. SQL-frågor
 
+> [!NOTE]
+**Användning av AI**
+
+Jag har använt ChatGPT som stöd för att skapa HTML-koden till tabellerna i min Markdown-dokumentation. Syftet var att
+kunna presentera skärmdumpar och GIF-animationer tillsammans med tillhörande beskrivningar på ett tydligt och enhetligt
+sätt.
+AI har hjälpt mig med tabellernas struktur, bildstorlekar, länkar till originalfilerna och formateringen. Jag har själv
+valt vilket material som ska visas, anpassat beskrivningarna och kontrollerat hur tabellerna presenteras i Markdown och
+på GitHub.
+
 ### 4.1 G1 Anställda med avdelning (INNER JOIN)
 
 **Syfte:** Visa anställdas förnamn, efternamn och avdelningsnamn.
 
-**SQL-fråga:** [Anställda med avdelning](SQL-files/personalregister.sql#L438-L443)
+**SQL-fråga:** [Anställda med avdelning](SQL-files/personalregister.sql#L437-L443)
 
 ```sql
 SELECT e.first_name, e.last_name, d.department_name
@@ -233,7 +243,7 @@ FROM employee e
 **Syfte:** Visa alla avdelningar och deras anställda,
 även avdelningar utan personal.
 
-**SQL-fråga:** [Alla avdelningar med anställda](SQL-files/personalregister.sql#L446-L453)
+**SQL-fråga:** [Alla avdelningar med anställda](SQL-files/personalregister.sql#L445-L453)
 
 ```sql
 SELECT d.department_name,
@@ -296,7 +306,7 @@ FROM department d
 avdelningar och eventuella passerkort, även anställda
 som saknar passerkort.
 
-**SQL-fråga:** [Anställda med avdelning och passerkort](SQL-files/personalregister.sql#L456-L466)
+**SQL-fråga:** [Anställda med avdelning och passerkort](SQL-files/personalregister.sql#L455-L466)
 
 ```sql
 SELECT d.department_name,
@@ -364,7 +374,7 @@ FROM employee e
 eventuella passerkort, inklusive avdelningar utan anställda
 och anställda utan passerkort.
 
-**SQL-fråga:** [Avdelningar med anställda och passerkort](SQL-files/personalregister.sql#L468-L478)
+**SQL-fråga:** [Avdelningar med anställda och passerkort](SQL-files/personalregister.sql#L467)
 
 ```sql
 SELECT d.department_name,
@@ -626,7 +636,7 @@ relationerna saknas.
 **Syfte:** Undersöka hur valet av JOIN-typ påverkar
 resultatet när det finns avdelningar utan anställda.
 
-**SQL-frågor:** [Jämförelse mellan INNER JOIN och LEFT JOIN](SQL-files/personalregister.sql#L512)
+**SQL-frågor:** [Jämförelse mellan INNER JOIN och LEFT JOIN](SQL-files/personalregister.sql#L598)
 
 **INNER JOIN**
 
