@@ -163,8 +163,8 @@ Testdatan är utformad för att täcka följande situationer:
 - Fyra kompetenser utan kopplade anställda.
 - Anställda med identiska namn men olika e-postadresser.
 
-### 3.3 Användning av AI
-
+> [!NOTE]
+**Användning av AI**
 ChatGPT användes för att generera fiktiv testdata, inklusive namn, avdelningar, kompetenser och beskrivningar.
 Jag har själv kontrollerat att testdatan följer databasens relationer och begränsningar.
 
