@@ -115,7 +115,7 @@ som delar upp relationen i två 1:N-relationer.
 
 ### 2.5 Färdig datamodell
 
-![ER-diagram över personalregistret](pictures/ER-diagramLABB2.png)
+![ER-diagram över personalregistret](pictures/ER-diagramLABBET.png)
 
 *Figur 2. Personalregistrets datamodell.*
 
